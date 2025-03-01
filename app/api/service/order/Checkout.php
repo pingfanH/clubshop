@@ -338,7 +338,7 @@ class Checkout extends BaseService
             // 是否允许使用积分抵扣
             'isAllowPoints' => false,
             // 是否使用积分抵扣
-            'isUsePoints' => $this->param['isUsePoints'],
+            'isUsePoints' => (bool)$this->param['isUsePoints'],
             // 积分抵扣金额
             'pointsMoney' => '0.00',
             // 赠送的积分数量
