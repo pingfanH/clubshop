@@ -18,6 +18,8 @@ use app\common\model\UserCoupon as UserCouponModel;
 use app\common\enum\order\PayStatus as PayStatusEnum;
 use app\common\enum\order\OrderStatus as OrderStatusEnum;
 use app\common\service\goods\source\Factory as FactoryStock;
+use Godruoyi\Snowflake\Snowflake;
+use Godruoyi\Snowflake\SnowflakeException;
 
 /**
  * 订单服务类
@@ -27,12 +29,17 @@ use app\common\service\goods\source\Factory as FactoryStock;
 class Order extends BaseService
 {
     /**
-     * 生成订单号
+     * 生成订单号 (使用雪花算法)
      * @return string
      */
     public static function createOrderNo(): string
     {
-        return date('Ymd') . substr(implode('', array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
+        $snowflake = new Snowflake;
+        try {
+            $snowflake->setStartTimeStamp(strtotime('2024-01-01') * 1000);
+        } catch (SnowflakeException $e) {
+        }
+        return $snowflake->id();
     }
 
     /**
