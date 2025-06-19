@@ -37,9 +37,9 @@ class Page extends BaseModel
     public function getPageDataAttr(string $json): array
     {
         // 数据转义
-        $array = helper::jsonDecode(htmlspecialchars_decode($json));
+        $array = helper::jsonDecode(\htmlspecialchars_decode($json));
         // 合并默认数据
-        return $this->_mergeDefaultData($array);
+        return $this->mergeDefaultData($array);
     }
 
     /**
@@ -72,7 +72,7 @@ class Page extends BaseModel
     }
 
     /**
-     * 页面diy元素默认数据
+     * 店铺页面元素默认数据
      * @return array
      */
     public function getDefaultItems(): array
@@ -100,12 +100,16 @@ class Page extends BaseModel
                 ]
             ],
             'banner' => [
-                'name' => '图片轮播',
+                'name' => '轮播图',
                 'type' => 'banner',
                 'style' => [
-                    'btnColor' => '#ffffff',
-                    'btnShape' => 'round',
-                    'interval' => 2.5
+                    'paddingTop' => 0,
+                    'paddingLeft' => 0,
+                    'background' => '#ffffff',
+                    'btnShape' => 'round',          // 指示点形状
+                    'btnColor' => '#ffffff',        // 指示点颜色
+                    'interval' => 3,                // 切换时间
+                    'borderRadius' => 0,            // 圆角尺寸
                 ],
                 'data' => [
                     [
@@ -121,12 +125,14 @@ class Page extends BaseModel
                 ]
             ],
             'image' => [
-                'name' => '图片',
+                'name' => '图片组',
                 'type' => 'image',
                 'style' => [
                     'paddingTop' => 0,
                     'paddingLeft' => 0,
-                    'background' => '#ffffff'
+                    'background' => '#ffffff',
+                    'borderRadius' => 0,             // 圆角尺寸
+                    'itemMargin' => 0,               // 图片间距
                 ],
                 'data' => [
                     [
@@ -298,12 +304,13 @@ class Page extends BaseModel
                 'dataNum' => 4
             ],
             'hotZone' => [
-                'name' => '热区',
+                'name' => '热区组',
                 'type' => 'hotZone',
                 'style' => [
                     'paddingTop' => 0,
                     'paddingLeft' => 0,
-                    'background' => '#ffffff'
+                    'background' => '#ffffff',
+                    'borderRadius' => 0,             // 圆角尺寸
                 ],
                 'data' => [
                     'imgUrl' => base_url() . 'assets/store/img/diy/banner/01.png',
@@ -426,7 +433,7 @@ class Page extends BaseModel
                 'style' => []
             ],
             'coupon' => [
-                'name' => '优惠券组',
+                'name' => '优惠券',
                 'type' => 'coupon',
                 'style' => [
                     'paddingTop' => 10,
@@ -536,7 +543,7 @@ class Page extends BaseModel
     }
 
     /**
-     * diy页面详情
+     * 获取指定的页面详情
      * @param int $pageId
      * @return static|array|null
      */
@@ -546,7 +553,7 @@ class Page extends BaseModel
     }
 
     /**
-     * diy页面详情
+     * 获取首页页面详情
      * @return static|array|null
      */
     public static function getHomePage()
@@ -556,16 +563,16 @@ class Page extends BaseModel
 
     /**
      * 合并默认数据
-     * @param $array
-     * @return mixed
+     * @param array $array
+     * @return array
      */
-    private function _mergeDefaultData($array)
+    private function mergeDefaultData(array $array): array
     {
         $array['page'] = \resetOptions($this->getDefaultPage(), $array['page']);
         $defaultItems = $this->getDefaultItems();
         foreach ($array['items'] as &$item) {
             if (isset($defaultItems[$item['type']])) {
-                array_key_exists('data', $item) && $defaultItems[$item['type']]['data'] = [];
+                \array_key_exists('data', $item) && $defaultItems[$item['type']]['data'] = [];
                 $item = \resetOptions($defaultItems[$item['type']], $item);
             }
         }
