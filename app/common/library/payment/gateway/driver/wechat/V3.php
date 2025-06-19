@@ -179,30 +179,26 @@ class V3
 
     /**
      * 支付成功后的异步通知
-     * @param string $apiv3Key 微信支付v3秘钥
+     * @param string $apiV3Key 微信支付v3秘钥
      * @param string $platformCertificateOrPublicKeyFilePath 微信支付公钥或平台证书路径
      * @return bool|string
      */
-    public function notify(string $apiv3Key, string $platformCertificateOrPublicKeyFilePath)
+    public function notify(string $apiV3Key, string $platformCertificateOrPublicKeyFilePath)
     {
         // 微信异步通知参数
         $header = \request()->header();
         $inBody = file_get_contents('php://input');
-
         // 微信支付平台证书
         $platformPublicKeyInstance = Rsa::from("file://{$platformCertificateOrPublicKeyFilePath}", Rsa::KEY_TYPE_PUBLIC);
-
         // 检查通知时间偏移量，允许5分钟之内的偏移
         // $timeOffsetStatus = 300 >= abs(Formatter::timestamp() - (int)$inWechatpayTimestamp);
         $timeOffsetStatus = true;
-
         $verifiedStatus = Rsa::verify(
         // 构造验签名串
             Formatter::joinedByLineFeed($header['wechatpay-timestamp'], $header['wechatpay-nonce'], $inBody),
             $header['wechatpay-signature'],
             $platformPublicKeyInstance
         );
-
         if ($timeOffsetStatus && $verifiedStatus) {
             // 转换通知的JSON文本消息为PHP Array数组
             $inBodyArray = (array)json_decode($inBody, true);
@@ -213,12 +209,12 @@ class V3
                 'associated_data' => $aad
             ]] = $inBodyArray;
             // 加密文本消息解密
-            $inBodyResource = AesGcm::decrypt($ciphertext, $apiv3Key, $nonce, $aad);
+            $inBodyResource = AesGcm::decrypt($ciphertext, $apiV3Key, $nonce, $aad);
             // 把解密后的文本转换为PHP Array数组
             $this->notifyParams = helper::jsonDecode($inBodyResource);
             // 记录日志
-            Log::append('Wechat-notify', ['message' => '微信异步回调验证成功']);
-            return $this->notifyParams['out_trade_no'];
+            Log::append('Wechat-notify', ['message' => '微信异步回调验证成功', 'notifyParams' => $this->notifyParams]);
+            return true;
         }
         return false;
     }

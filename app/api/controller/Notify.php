@@ -23,7 +23,7 @@ use app\api\service\Notify as NotifyService;
 class Notify extends BaseController
 {
     /**
-     * 支付成功异步通知 (微信支付v2)
+     * 支付成功异步通知 (微信支付V2)
      * @return string
      */
     public function wechatV2(): string
@@ -37,7 +37,7 @@ class Notify extends BaseController
     }
 
     /**
-     * 支付成功异步通知 (微信支付)
+     * 支付成功异步通知 (微信支付V3)
      * @return string
      */
     public function wechatV3(): string

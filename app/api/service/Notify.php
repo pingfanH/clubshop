@@ -15,8 +15,8 @@ namespace app\api\service;
 use app\api\model\Payment as PaymentModel;
 use app\api\model\PaymentTrade as PaymentTradeModel;
 use app\api\model\PaymentTemplate as PaymentTemplateModel;
-use app\api\service\order\PaySuccess as OrderPaySuccesService;
-use app\api\service\recharge\PaySuccess as RechargePaySuccesService;
+use app\api\service\order\PaySuccess as OrderPaySuccessService;
+use app\api\service\recharge\PaySuccess as RechargePaySuccessService;
 use app\common\enum\OrderType as OrderTypeEnum;
 use app\common\enum\payment\Method as PaymentMethodEnum;
 use app\common\library\Log;
@@ -33,6 +33,9 @@ use cores\exception\BaseException;
  */
 class Notify
 {
+    // 异步通知的请求参数 (由第三方支付发送)
+    private array $notifyParams;
+
     /**
      * 支付成功异步通知 (微信支付V2)
      * @return string
@@ -46,7 +49,7 @@ class Notify
             $Payment = $this->getPayment($tradeInfo);
             // 验证异步通知参数是否合法
             if (!$Payment->notify()) {
-                throwError($Payment->getError() ?: '异步通知验证未通过');
+                throwError($Payment->getError() ?: '微信支付V2异步通知验证未通过');
             }
             // 订单支付成功事件
             $this->orderPaySucces($tradeInfo, $Payment->getNotifyParams());
@@ -64,33 +67,54 @@ class Notify
     public function wechatV3(): string
     {
         try {
-            // 通过微信支付v3平台证书序号或微信支付公钥ID 获取支付模板
-            $platformCertificateSerialOrPublicKeyId = \request()->header('wechatpay-serial');
-            $templateInfo = PaymentTemplateModel::findByWechatpaySerial($platformCertificateSerialOrPublicKeyId);
-            empty($templateInfo) && throwError("未找到该平台证书序号或微信支付公钥ID：$platformCertificateSerialOrPublicKeyId");
-
-            // 从支付模板中取出v3apikey 用于解密异步通知的密文
-            $apiv3Key = $templateInfo['config']['wechat']['mchType'] === 'provider'
-                ? $templateInfo['config']['wechat']['provider']['spApiKey']
-                : $templateInfo['config']['wechat']['normal']['apiKey'];
-
-            // 获取「微信支付平台证书」或者「微信支付平台公钥」的路径
-            $platformCertificateOrPublicKeyFilePath = $this->getPlatformCertificateOrPublicKeyFilePath($templateInfo);
-
-            // 验证异步通知是否合法并获取第三方支付交易订单号
-            $V3 = new WechatPaymentV3();
-            $outTradeNo = $V3->notify($apiv3Key, $platformCertificateOrPublicKeyFilePath);
-            empty($outTradeNo) && throwError('异步通知验证未通过');
-
+            // 微信支付V3异步回调验证
+            $this->wechatV3Notify();
+            // 获取异步回调的请求参数
+            $notifyParams = $this->getNotifyParams();
             // 获取第三方交易记录
-            $tradeInfo = PaymentTradeModel::detailByOutTradeNo($outTradeNo);
+            $tradeInfo = PaymentTradeModel::detailByOutTradeNo($notifyParams['outTradeNo']);
             // 订单支付成功事件
-            $this->orderPaySucces($tradeInfo, $V3->getNotifyParams());
+            $this->orderPaySucces($tradeInfo, $notifyParams);
         } catch (\Throwable $e) {
             // 记录错误日志
             Log::append('Notify-wechat', ['errMessage' => $e->getMessage()]);
         }
         return '';
+    }
+
+    /**
+     * 微信支付V3异步回调验证
+     * @return void
+     * @throws BaseException
+     */
+    private function wechatV3Notify()
+    {
+        // 通过微信支付v3平台证书序号或微信支付公钥ID 获取支付模板
+        $platformCertificateSerialOrPublicKeyId = \request()->header('wechatpay-serial');
+        $templateInfo = PaymentTemplateModel::findByWechatpaySerial($platformCertificateSerialOrPublicKeyId);
+        empty($templateInfo) && throwError("未找到该平台证书序号或微信支付公钥ID：$platformCertificateSerialOrPublicKeyId");
+        // 从支付模板中取出v3apikey 用于解密异步通知的密文
+        $apiV3Key = $templateInfo['config']['wechat']['mchType'] === 'provider'
+            ? $templateInfo['config']['wechat']['provider']['spApiKey']
+            : $templateInfo['config']['wechat']['normal']['apiKey'];
+        // 获取「微信支付平台证书」或者「微信支付平台公钥」的路径
+        $platformCertificateOrPublicKeyFilePath = $this->getPlatformCertificateOrPublicKeyFilePath($templateInfo);
+        // 验证异步通知参数是否合法
+        $V3 = new WechatPaymentV3();
+        if (!$V3->notify($apiV3Key, $platformCertificateOrPublicKeyFilePath)) {
+            throwError($V3->getError() ?: '异步通知验证未通过');
+        }
+        // 获取异步回调的请求参数
+        $this->notifyParams = $V3->getNotifyParams();
+    }
+
+    /**
+     * 获取异步回调的请求参数
+     * @return array
+     */
+    public function getNotifyParams(): array
+    {
+        return $this->notifyParams;
     }
 
     /**
@@ -125,7 +149,7 @@ class Notify
             $Payment = $this->getPayment($tradeInfo);
             // 验证异步通知参数是否合法
             if (!$Payment->notify()) {
-                throwError($Payment->getError() ?: '异步通知验证未通过');
+                throwError($Payment->getError() ?: '支付宝异步通知验证未通过');
             }
             // 订单支付成功事件
             $this->orderPaySucces($tradeInfo, $Payment->getNotifyParams());
@@ -151,7 +175,7 @@ class Notify
         try {
             // 订单支付成功业务处理 (商城订单)
             if ($tradeInfo['order_type'] == OrderTypeEnum::ORDER) {
-                $service = new OrderPaySuccesService;
+                $service = new OrderPaySuccessService;
                 $service->setOrderNo($tradeInfo['order_no'])
                     ->setMethod($tradeInfo['pay_method'])
                     ->setTradeId($tradeInfo['trade_id'])
@@ -160,7 +184,7 @@ class Notify
             }
             // 订单支付成功业务处理 (余额充值订单)
             if ($tradeInfo['order_type'] == OrderTypeEnum::RECHARGE) {
-                $service = new RechargePaySuccesService;
+                $service = new RechargePaySuccessService;
                 $service->setOrderNo($tradeInfo['order_no'])
                     ->setMethod($tradeInfo['pay_method'])
                     ->setTradeId($tradeInfo['trade_id'])
