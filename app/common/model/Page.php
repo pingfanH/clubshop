@@ -83,8 +83,20 @@ class Page extends BaseModel
                 'type' => 'search',
                 'params' => ['placeholder' => '请输入关键字进行搜索', 'sticky' => false],
                 'style' => [
+                    // 文字对齐方式
                     'textAlign' => 'left',
-                    'searchStyle' => 'square'
+                    // 搜索框样式 (square方形 radius圆角 round圆弧)
+                    'searchStyle' => 'round',
+                    // 搜索框背景颜色
+                    'searchBg' => '#ffffff',
+                    // 搜索框文字颜色
+                    'searchFontColor' => '#999999',
+                    // 组件背景颜色
+                    'background' => '#f1f1f2',
+                    // 上下边距
+                    'paddingY' => 10,
+                    // 左右边距
+                    'paddingX' => 10,
                 ]
             ],
             'banner' => [
@@ -127,7 +139,15 @@ class Page extends BaseModel
             'navBar' => [
                 'name' => '导航组',
                 'type' => 'navBar',
-                'style' => ['rowsNum' => 4, 'background' => '#ffffff', 'paddingTop' => 0, 'textColor' => '#666666'],
+                'style' => [
+                    'rowsNum' => 4,
+                    'background' => '#ffffff',
+                    'paddingTop' => 10,
+                    // 文字颜色
+                    'textColor' => '#666666',
+                    // 图片大小
+                    'imageSize' => 44,
+                ],
                 'data' => [
                     [
                         'imgUrl' => base_url() . 'assets/store/img/diy/navbar/01.png',
@@ -183,8 +203,10 @@ class Page extends BaseModel
                     'autoplay' => 0
                 ],
                 'style' => [
-                    'paddingTop' => 0,
-                    'height' => 190
+                    'background' => '#ffffff',
+                    'paddingTop' => 10,
+                    'paddingLeft' => 10,
+                    'height' => 202
                 ]
             ],
             'article' => [
@@ -228,7 +250,10 @@ class Page extends BaseModel
                 'style' => [
                     'paddingTop' => 0,
                     'background' => '#fffbe8',
-                    'textColor' => '#de8c17'
+                    // 文字颜色
+                    'textColor' => '#de8c17',
+                    // 文字大小
+                    'fontSize' => 14,
                 ]
             ],
             'richText' => [
