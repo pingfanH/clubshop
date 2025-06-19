@@ -239,7 +239,7 @@ class Payment extends BaseModel
         ];
         $defaultMethods = [];
         foreach ($designated as $key => $method) {
-            $defaultMethods["{$client}-{$method}"] = array_merge($record, [
+            $defaultMethods["{$client}-{$method}"] = \array_merge($record, [
                 'key' => $key + 1,
                 'method' => $method,
                 'is_must_template' => !\in_array($method, [PaymentMethodEnum::BALANCE]),

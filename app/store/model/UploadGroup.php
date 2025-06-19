@@ -74,7 +74,7 @@ class UploadGroup extends UploadGroupModel
      */
     public function add(array $data): bool
     {
-        return $this->save(array_merge([
+        return $this->save(\array_merge([
             'store_id' => self::$storeId,
             'sort' => 100
         ], $data));

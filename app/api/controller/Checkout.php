@@ -160,7 +160,7 @@ class Checkout extends Controller
      */
     private function getValidate(): CheckoutValidate
     {
-        if (is_null($this->validate)) {
+        if (\is_null($this->validate)) {
             $this->validate = new CheckoutValidate;
         }
         return $this->validate;
@@ -173,7 +173,7 @@ class Checkout extends Controller
     private function getCartIds()
     {
         $cartIds = $this->request->param('cartIds');
-        return explode(',', $cartIds);
+        return \explode(',', $cartIds);
     }
 
     /**
@@ -183,6 +183,6 @@ class Checkout extends Controller
      */
     private function getParam(array $define = []): array
     {
-        return array_merge($define, $this->request->param());
+        return \array_merge($define, $this->request->param());
     }
 }

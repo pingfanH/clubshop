@@ -123,7 +123,7 @@ class Checkout extends BaseService
      */
     public function setParam($param): array
     {
-        $this->param = array_merge($this->param, $param);
+        $this->param = \array_merge($this->param, $param);
         return $this->getParam();
     }
 
@@ -154,7 +154,7 @@ class Checkout extends BaseService
      */
     public function setOrderSource($data): Checkout
     {
-        $this->orderSource = array_merge($this->orderSource, $data);
+        $this->orderSource = \array_merge($this->orderSource, $data);
         return $this;
     }
 

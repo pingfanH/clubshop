@@ -140,7 +140,7 @@ class PaymentTemplate extends BaseModel
         $info = $template->toArray();
         // 记录证书文件名
         $methodConfig = $info['config'][$info['method']];
-        $info['config'] = [$info['method'] => array_merge(
+        $info['config'] = [$info['method'] => \array_merge(
             $methodConfig,
             $this->certFileName($info['method'], $methodConfig, $template['store_id'])
         )];

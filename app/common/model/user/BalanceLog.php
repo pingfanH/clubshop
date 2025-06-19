@@ -51,7 +51,7 @@ class BalanceLog extends BaseModel
     public static function add(int $scene, array $data, array $describeParam, ?int $storeId = null)
     {
         $model = new static;
-        $model->save(array_merge([
+        $model->save(\array_merge([
             'scene' => $scene,
             'describe' => vsprintf(SceneEnum::data()[$scene]['describe'], $describeParam),
             'store_id' => $storeId ?: $model::$storeId

@@ -39,7 +39,7 @@ class Goods extends BaseService
         $model = new GoodsModel;
         $goodsData = $model->getListByIds(helper::getArrayColumn($dataSource, $goodsIndex));
         // 设置隐藏的属性
-        $goodsData->hidden(array_merge(['images'], $hidden));
+        $goodsData->hidden(\array_merge(['images'], $hidden));
         // 整理列表数据
         $goodsList = helper::arrayColumn2Key($goodsData, 'goods_id');
         foreach ($dataSource as &$item) {

@@ -73,7 +73,7 @@ class PaymentTemplate extends PaymentTemplateModel
         $data['store_id'] = self::$storeId;
         // 记录证书文件名
         $data['config'] = [
-            $data['method'] => array_merge($methodConfig, $this->certFileName($data['method'], $methodConfig))
+            $data['method'] => \array_merge($methodConfig, $this->certFileName($data['method'], $methodConfig))
         ];
         // 记录微信支付v3平台证书序号或微信支付公钥ID
         $data['wechatpay_serial'] = $this->wechatpaySerial($data);

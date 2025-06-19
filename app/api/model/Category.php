@@ -41,6 +41,6 @@ class Category extends CategoryModel
      */
     public function getListPublic(array $param = []): array
     {
-        return parent::getList(array_merge($param, ['status' => 1]));
+        return parent::getList(\array_merge($param, ['status' => 1]));
     }
 }

@@ -39,7 +39,7 @@ class GradeLog extends BaseModel
     {
         $saveData = [];
         foreach ($data as $item) {
-            $saveData[] = array_merge([
+            $saveData[] = \array_merge([
                 'change_type' => ChangeTypeEnum::ADMIN_USER,
                 'store_id' => static::$storeId
             ], $item);

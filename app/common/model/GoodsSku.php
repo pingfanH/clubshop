@@ -172,7 +172,7 @@ class GoodsSku extends BaseModel
     {
         // 单规格模式
         if ($specType === SpecTypeEnum::SINGLE) {
-            return (new static)->save(array_merge($newSkuList, [
+            return (new static)->save(\array_merge($newSkuList, [
                 'goods_id' => $goodsId,
                 'goods_sku_id' => 0,
                 'store_id' => $storeId ?: self::$storeId
@@ -196,7 +196,7 @@ class GoodsSku extends BaseModel
     {
         $dataset = [];
         foreach ($skuList as $skuItem) {
-            $dataset[] = array_merge($skuItem, [
+            $dataset[] = \array_merge($skuItem, [
                 'id' => null,   // 此处的id必须是数据库自增
                 'goods_sku_id' => $skuItem['goods_sku_id'],
                 'goods_price' => $skuItem['goods_price'] ?: 0.01,

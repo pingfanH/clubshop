@@ -69,7 +69,7 @@ class Role extends BaseService
                 // 页面操作项 例如: 新增 编辑 删除
                 'actionEntitySet' => static::getActionEntitySet($menu)
             ];
-            !empty($menu['children']) && $data = array_merge($data, static::buildPermissions($menu['children']));
+            !empty($menu['children']) && $data = \array_merge($data, static::buildPermissions($menu['children']));
         }
         return $data;
     }

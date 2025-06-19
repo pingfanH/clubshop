@@ -92,7 +92,7 @@ class User extends BaseModel
     {
         $filter = ['is_delete' => 0];
         if (is_array($where)) {
-            $filter = array_merge($filter, $where);
+            $filter = \array_merge($filter, $where);
         } else {
             $filter['user_id'] = (int)$where;
         }

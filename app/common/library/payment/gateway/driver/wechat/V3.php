@@ -558,7 +558,7 @@ class V3
             'noncestr' => Formatter::nonce(),
             'prepayid' => $prepayId,
         ];
-        return array_merge($params, [
+        return \array_merge($params, [
             'sign' => Rsa::sign(
                 Formatter::joinedByLineFeed(...array_values($params)),
                 $this->getMerchantPrivateKeyInstance()

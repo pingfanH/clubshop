@@ -52,9 +52,9 @@ class Log
      */
     public static function append(string $name, array $data)
     {
-        $merge = array_merge(compact('name'), $data);
+        $merge = \array_merge(compact('name'), $data);
         if (isset(static::$data[$name])) {
-            $merge = array_merge(static::$data[$name], $merge);
+            $merge = \array_merge(static::$data[$name], $merge);
         }
         static::$data[$name] = $merge;
     }
@@ -65,7 +65,7 @@ class Log
     public static function end()
     {
         foreach (static::$data as $name => $item) {
-            static::record(array_merge(['name' => $name], $item));
+            static::record(\array_merge(['name' => $name], $item));
         }
     }
 }

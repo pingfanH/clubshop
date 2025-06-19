@@ -96,7 +96,7 @@ class Goods extends GoodsModel
     public function getList(array $param = [], int $listRows = 15)
     {
         // 整理查询参数
-        $params = array_merge($param, ['status' => GoodsStatusEnum::ON_SALE]);
+        $params = \array_merge($param, ['status' => GoodsStatusEnum::ON_SALE]);
         // 获取商品列表
         $list = parent::getList($params, $listRows);
         if ($list->isEmpty()) {

@@ -388,7 +388,7 @@ class helper
      */
     public static function setQueryDefaultValue(array $query, array $default = []): array
     {
-        $data = array_merge($default, $query);
+        $data = \array_merge($default, $query);
 
         foreach ($query as $field => $value) {
             // 不存在默认值跳出循环

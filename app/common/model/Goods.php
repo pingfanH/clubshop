@@ -211,7 +211,7 @@ class Goods extends BaseModel
         } elseif ($params['sortType'] === 'price') {
             $sort = $params['sortPrice'] ? ['goods_price_max' => 'desc'] : ['goods_price_min' => 'asc'];
         }
-        return array_merge($sort, [$this->getPk() => 'desc']);
+        return \array_merge($sort, [$this->getPk() => 'desc']);
     }
 
     /**
