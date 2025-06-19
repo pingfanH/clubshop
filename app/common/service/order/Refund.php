@@ -65,6 +65,9 @@ class Refund extends BaseService
      */
     private function balance($order, string $money): bool
     {
+        if ($money <= 0) {
+            return false;
+        }
         // 回退用户余额
         UserModel::setIncBalance((int)$order['user_id'], (float)$money);
         // 记录余额明细

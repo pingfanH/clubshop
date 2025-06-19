@@ -135,7 +135,7 @@ class Payment extends BaseService
             // 获取第三方交易记录信息
             $tradeInfo = PaymentTradeModel::detailByOutTradeNo($outTradeNo);
             // 订单支付成功事件
-            $this->orderPaySucces($tradeInfo['order_no'], $tradeInfo['trade_id'], $result);
+            $this->orderPaySuccess($tradeInfo['order_no'], $tradeInfo['trade_id'], $result);
         }
         // 返回订单状态
         return $result ? $result['paySuccess'] : false;
@@ -266,7 +266,7 @@ class Payment extends BaseService
      * @return void
      * @throws BaseException
      */
-    private function orderPaySucces(string $orderNo, ?int $tradeId = null, array $paymentData = []): void
+    private function orderPaySuccess(string $orderNo, ?int $tradeId = null, array $paymentData = []): void
     {
         // 获取订单详情
         $service = new RechargePaySuccesService;

@@ -52,7 +52,7 @@ class Notify
                 throwError($Payment->getError() ?: '微信支付V2异步通知验证未通过');
             }
             // 订单支付成功事件
-            $this->orderPaySucces($tradeInfo, $Payment->getNotifyParams());
+            $this->orderPaySuccess($tradeInfo, $Payment->getNotifyParams());
         } catch (\Throwable $e) {
             // 记录错误日志
             Log::append('Notify-wechat', ['errMessage' => $e->getMessage()]);
@@ -74,7 +74,7 @@ class Notify
             // 获取第三方交易记录
             $tradeInfo = PaymentTradeModel::detailByOutTradeNo($notifyParams['outTradeNo']);
             // 订单支付成功事件
-            $this->orderPaySucces($tradeInfo, $notifyParams);
+            $this->orderPaySuccess($tradeInfo, $notifyParams);
         } catch (\Throwable $e) {
             // 记录错误日志
             Log::append('Notify-wechat', ['errMessage' => $e->getMessage()]);
@@ -152,7 +152,7 @@ class Notify
                 throwError($Payment->getError() ?: '支付宝异步通知验证未通过');
             }
             // 订单支付成功事件
-            $this->orderPaySucces($tradeInfo, $Payment->getNotifyParams());
+            $this->orderPaySuccess($tradeInfo, $Payment->getNotifyParams());
         } catch (\Throwable $e) {
             // 记录错误日志
             Log::append('Notify-alipay', ['errMessage' => $e->getMessage()]);
@@ -165,7 +165,7 @@ class Notify
      * @param PaymentTradeModel $tradeInfo
      * @param array $paymentData 第三方支付异步回调的
      */
-    private function orderPaySucces(PaymentTradeModel $tradeInfo, array $paymentData)
+    private function orderPaySuccess(PaymentTradeModel $tradeInfo, array $paymentData)
     {
         // 记录日志
         Log::append('Notify-orderPaySucces', [

@@ -150,28 +150,48 @@ class OrderRefund extends OrderRefundModel
         }
         // 事务处理
         $this->transaction(function () use ($order, $data) {
-            // 执行退款操作
-            if (!(new RefundService)->handle($order, (string)$data['refund_money'])) {
-                throwError('执行订单退款失败');
-            }
-            // 更新售后单状态
-            $this->save([
-                'refund_money' => $data['refund_money'],
-                'is_receipt' => 1,
-                'status' => RefundStatusEnum::COMPLETED
-            ]);
-            // 消减用户的实际消费金额
-            // 条件：判断订单是否已结算
-            if ($order['is_settled']) {
-                (new UserModel)->setDecUserExpend($order['user_id'], $data['refund_money']);
-            }
-            // 发送消息通知
-            MessageService::send('order.refund', [
-                'refund' => $this,                  // 售后单信息
-                'order_no' => $order['order_no'],   // 订单信息
-            ], $this['store_id']);
+            $this->receiptEvent($order, $data);
         });
         return true;
+    }
+
+    /**
+     * 确认收货并退款事件
+     * @param $order
+     * @param $data
+     * @return void
+     * @throws \cores\exception\BaseException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    private function receiptEvent($order, $data)
+    {
+        // 执行退款操作
+        if (!(new RefundService)->handle($order, (string)$data['refund_money'])) {
+            throwError('执行订单退款失败');
+        }
+        // 回退用户积分 (积分商城兑换)
+        if ($order['pm_points_price'] > 0) {
+            $describe = "订单退款退回：{$order['order_no']}";
+            UserModel::setIncPoints($order['user_id'], $order['pm_points_price'], $describe, $order['store_id']);
+        }
+        // 更新售后单状态
+        $this->save([
+            'refund_money' => $data['refund_money'],
+            'is_receipt' => 1,
+            'status' => RefundStatusEnum::COMPLETED
+        ]);
+        // 消减用户的实际消费金额
+        // 条件：判断订单是否已结算
+        if ($order['is_settled']) {
+            (new UserModel)->setDecUserExpend($order['user_id'], $data['refund_money']);
+        }
+        // 发送消息通知
+        MessageService::send('order.refund', [
+            'refund' => $this,                  // 售后单信息
+            'order_no' => $order['order_no'],   // 订单信息
+        ], $this['store_id']);
     }
 
     /**

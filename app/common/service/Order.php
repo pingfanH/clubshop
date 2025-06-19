@@ -53,9 +53,9 @@ class Order extends BaseService
         FactoryStock::getFactory($order['order_source'])->backGoodsStock($order['goods'], $isPayOrder);
         // 回退用户优惠券
         $order['coupon_id'] > 0 && UserCouponModel::setIsUse($order['coupon_id'], false);
-        // 回退用户积分
+        // 回退用户积分 (积分抵扣)
         if ($order['points_num'] > 0) {
-            $describe = "订单取消：{$order['order_no']}";
+            $describe = "订单取消退回：{$order['order_no']}";
             UserModel::setIncPoints($order['user_id'], $order['points_num'], $describe, $order['store_id']);
         }
     }

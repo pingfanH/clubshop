@@ -342,18 +342,31 @@ class PaySuccess extends BaseService
         $orderInfo = $this->getOrderInfo();
         // 余额支付
         if ($this->method == PaymentMethodEnum::BALANCE) {
-            // 更新用户余额
-            UserModel::setDecBalance((int)$orderInfo['user_id'], (float)$orderInfo['pay_price']);
-            // 新增余额变动记录
-            BalanceLogModel::add(SceneEnum::CONSUME, [
-                'user_id' => (int)$orderInfo['user_id'],
-                'money' => -$orderInfo['pay_price'],
-            ], ['order_no' => $orderInfo['order_no']], $orderInfo['store_id']);
+            $this->updateBalanceRecord($orderInfo);
         }
         // 将第三方交易记录更新为已支付状态
         if (in_array($this->method, [PaymentMethodEnum::WECHAT, PaymentMethodEnum::ALIPAY])) {
             $this->updateTradeRecord();
         }
+    }
+
+    /**
+     * 更新余额支付记录
+     * @param $orderInfo
+     * @return void
+     */
+    private function updateBalanceRecord($orderInfo)
+    {
+        if ($orderInfo['pay_price'] <= 0) {
+            return;
+        }
+        // 更新用户余额
+        UserModel::setDecBalance((int)$orderInfo['user_id'], (float)$orderInfo['pay_price']);
+        // 新增余额变动记录
+        BalanceLogModel::add(SceneEnum::CONSUME, [
+            'user_id' => (int)$orderInfo['user_id'],
+            'money' => -$orderInfo['pay_price'],
+        ], ['order_no' => $orderInfo['order_no']], $orderInfo['store_id']);
     }
 
     /**

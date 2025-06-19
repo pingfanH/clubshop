@@ -58,7 +58,7 @@ class Goods extends BaseModel
     }
 
     /**
-     * 计算显示销量 (初始销量 + 实际销量)
+     * 获取器：用户端显示的商品销量 (实际销量+初始销量)
      * @param $value
      * @param $data
      * @return mixed
@@ -176,7 +176,7 @@ class Goods extends BaseModel
     {
         // 筛选条件
         $query = $this->getQueryFilter($param);
-        // 设置显示的销量 goods_sales
+        // 设置显示的销量goods_sales (此处无法省略因为需要根据goods_sales排序)
         $query->field(['(sales_initial + sales_actual) as goods_sales']);
         // 排序条件
         $sort = $this->setQuerySort($param);
@@ -287,8 +287,6 @@ class Goods extends BaseModel
         $goodsInfo['goods_images'] = helper::getArrayColumn($goodsInfo['images'], 'file');
         // 商品主图
         $goodsInfo['goods_image'] = current($goodsInfo['goods_images'])['preview_url'];
-        // 商品销量(实际显示=初始虚拟销量+实际销量)
-        $goodsInfo['goods_sales'] = $goodsInfo['sales_initial'] + $goodsInfo['sales_actual'];
         // 回调函数
         is_callable($callback) && call_user_func($callback, $goodsInfo);
         return $goodsInfo;

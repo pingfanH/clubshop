@@ -566,7 +566,7 @@ class Page extends BaseModel
      * @param array $array
      * @return array
      */
-    private function mergeDefaultData(array $array): array
+    public function mergeDefaultData(array $array): array
     {
         $array['page'] = \resetOptions($this->getDefaultPage(), $array['page']);
         $defaultItems = $this->getDefaultItems();
