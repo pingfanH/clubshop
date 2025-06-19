@@ -65,7 +65,7 @@ class Goods extends BaseModel
      */
     public function getGoodsSalesAttr($value, $data)
     {
-        return $data['sales_initial'] + $data['sales_actual'];
+        return is_null($value) ? $data['sales_initial'] + $data['sales_actual'] : $value;
     }
 
     /**

@@ -33,7 +33,7 @@ class Category extends CategoryModel
     ];
 
     /**
-     * 获取分类列表
+     * 获取显示的分类列表
      * @return \think\Collection
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException

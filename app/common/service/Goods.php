@@ -33,7 +33,8 @@ class Goods extends BaseService
      */
     public static function setGoodsData($data, bool $isMultiple = true, array $hidden = [], string $goodsIndex = 'goods_id')
     {
-        if (!$isMultiple) $dataSource = [$data]; else $dataSource = $data;
+        // 数据来源
+        $dataSource = !$isMultiple ? [$data] : $data;
         // 获取商品列表
         $model = new GoodsModel;
         $goodsData = $model->getListByIds(helper::getArrayColumn($dataSource, $goodsIndex));

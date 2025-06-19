@@ -185,7 +185,7 @@ class User extends UserModel
             BalanceLogModel::add(SceneEnum::ADMIN, [
                 'user_id' => $this['user_id'],
                 'money' => (float)$diffMoney,
-                'remark' => $data['remark'],
+                'remark' => $data['remark'] ?? '',
             ], [$storeUserName]);
         });
         return true;
@@ -245,7 +245,7 @@ class User extends UserModel
                     'old_grade_id' => $oldGradeId,
                     'new_grade_id' => $data['grade_id'],
                     'change_type' => ChangeTypeEnum::ADMIN_USER,
-                    'remark' => $data['remark']
+                    'remark' => $data['remark']?? ''
                 ]);
             }
             return $status !== false;

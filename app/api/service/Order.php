@@ -78,7 +78,7 @@ class Order extends OrderService
      * 获取某商品的购买件数
      * @param int $userId 用户ID
      * @param int $goodsId 商品ID
-     * @param int $orderSource
+     * @param int $orderSource 商品来源
      * @return int
      */
     public static function getGoodsBuyNum(int $userId, int $goodsId, int $orderSource): int

@@ -66,9 +66,12 @@ class Checkout extends BaseService
      * @var array
      */
     private array $checkoutRule = [
-        'isUserGrade' => true,          // 会员等级折扣
-        'isCoupon' => true,             // 优惠券折扣
-        'isUsePoints' => true,          // 积分抵扣
+        'isUserGrade' => true,            // 会员等级折扣
+        'isCoupon' => true,               // 优惠券折扣
+        'isUsePoints' => true,            // 积分抵扣
+        'isUseFullDiscount' => true,      // 满额立减
+        'isUseFullFree' => true,          // 满额包邮
+        'isDealer' => true,               // 开启分销
     ];
 
     /**
@@ -127,7 +130,7 @@ class Checkout extends BaseService
      */
     public function setCheckoutRule($data): Checkout
     {
-        $this->checkoutRule = array_merge($this->checkoutRule, $data);
+        $this->checkoutRule = \array_merge($this->checkoutRule, $data);
         return $this;
     }
 

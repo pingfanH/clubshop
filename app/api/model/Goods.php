@@ -178,7 +178,7 @@ class Goods extends GoodsModel
         if (empty($goodsInfo) || $goodsInfo['is_delete']) {
             throwError('很抱歉，商品信息不存在');
         }
-        // 判断商品状态(上架)
+        // 判断商品状态 (上架)
         if ($verifyStatus && $goodsInfo['status'] == GoodsStatusEnum::OFF_SALE) {
             throwError('很抱歉，当前商品已下架');
         }

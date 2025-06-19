@@ -29,7 +29,6 @@ class Category extends CategoryModel
      */
     public function add(array $data): bool
     {
-        // 保存记录
         $data['store_id'] = self::$storeId;
         return $this->save($data);
     }
@@ -41,12 +40,11 @@ class Category extends CategoryModel
      */
     public function edit(array $data): bool
     {
-        // 保存记录
         return $this->save($data);
     }
 
     /**
-     * 删除商品分类
+     * 删除文章分类
      * @param int $categoryId
      * @return bool
      */
@@ -55,7 +53,7 @@ class Category extends CategoryModel
         // 判断是否存在文章
         $articleCount = ArticleModel::getArticleTotal(['category_id' => $categoryId]);
         if ($articleCount > 0) {
-            $this->error = '该分类下存在' . $articleCount . '个文章，不允许删除';
+            $this->error = "该分类下存在{$articleCount}个文章，不允许删除";
             return false;
         }
         // 删除记录
