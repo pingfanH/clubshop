@@ -93,7 +93,7 @@ class Login extends BaseService
         $setting = SettingModel::getItem(SettingEnum::REGISTER);
         // 后台设置了需强制绑定手机号, 返回前端isBindMobile, 跳转到手机号验证页
         if ($setting['isForceBindMpweixin']) {
-            throwError('当前用户未绑定手机号', null, ['isBindMobile' => true]);
+            throwError('当前用户未绑定手机号', null, ['isBindMobile' => true, 'isPrompt' => false]);
         }
         // 后台未开启强制绑定手机号, 直接保存新用户
         if (!$setting['isForceBindMpweixin']) {
@@ -130,7 +130,7 @@ class Login extends BaseService
     }
 
     /**
-     * 快捷登录：微信小程序用户
+     * 快捷登录：微信小程序授权手机号登录
      * @param array $form
      * @return bool
      * @throws BaseException
@@ -242,7 +242,7 @@ class Login extends BaseService
         // 写入用户信息(第三方)
         if ($isParty === true && !empty($partyData)) {
             $partyUserInfo = PartyService::partyUserInfo($partyData, true);
-            $data = array_merge($data, $partyUserInfo);
+            $data = \array_merge($data, $partyUserInfo);
         }
         // 新增用户记录
         $model = new UserModel;
@@ -276,7 +276,7 @@ class Login extends BaseService
         // 如果不需要每次登录都更新微信用户头像昵称, 下面几行代码可以屏蔽掉
 //        if ($isParty === true && !empty($partyData)) {
 //            $partyUserInfo = PartyService::partyUserInfo($partyData);
-//            $data = array_merge($data, $partyUserInfo);
+//            $data = \array_merge($data, $partyUserInfo);
 //        }
 //        // 记录头像文件上传者
 //        if (isset($data['avatar_id']) && $data['avatar_id'] > 0) {
