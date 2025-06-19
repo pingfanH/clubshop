@@ -108,7 +108,7 @@ class Checkout extends Controller
             return $this->renderError($Checkout->getError() ?: '订单创建失败', ['isCreated' => false]);
         }
         // 返回状态
-        return $this->renderSuccess(['orderId' => $Checkout->model['order_id']], '订单创建成功');
+        return $this->renderSuccess(['orderId' => (int)$Checkout->model['order_id']], '订单创建成功');
     }
 
     /**

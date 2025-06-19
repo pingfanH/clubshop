@@ -14,6 +14,7 @@ namespace app\api\model;
 
 use app\api\service\User as UserService;
 use app\api\model\Coupon as CouponModel;
+use app\common\library\Log;
 use app\common\model\UserCoupon as UserCouponModel;
 use app\common\enum\coupon\CouponType as CouponTypeEnum;
 use app\common\enum\coupon\ApplyRange as ApplyRangeEnum;
@@ -145,7 +146,7 @@ class UserCoupon extends UserCouponModel
         // 当前用户ID
         $userId = UserService::getCurrentLoginUserId(true);
         // 获取优惠券信息
-        $couponInfo = Coupon::detail($couponId);
+        $couponInfo = CouponModel::detail($couponId);
         // 验证优惠券是否可领取
         if (!$this->checkReceive($userId, $couponInfo)) {
             return false;
@@ -162,10 +163,6 @@ class UserCoupon extends UserCouponModel
      */
     private function checkReceive(int $userId, CouponModel $couponInfo): bool
     {
-        if (empty($couponInfo)) {
-            $this->error = '当前优惠券不存在';
-            return false;
-        }
         // 验证优惠券状态是否可领取
         $model = new CouponModel;
         if (!$model->checkReceive($couponInfo)) {
