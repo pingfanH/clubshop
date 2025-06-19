@@ -12,6 +12,7 @@ declare (strict_types=1);
 
 namespace app\timer\controller;
 
+use cores\BaseTimer;
 use app\timer\service\UserCoupon as UserCouponService;
 
 /**
@@ -19,16 +20,13 @@ use app\timer\service\UserCoupon as UserCouponService;
  * Class UserCoupon
  * @package app\timer\controller
  */
-class UserCoupon extends Controller
+class UserCoupon extends BaseTimer
 {
     // 当前任务唯一标识
-    private string $taskKey = 'UserCoupon';
+    protected string $taskKey = 'UserCoupon';
 
     // 任务执行间隔时长 (单位:秒)
     protected int $taskExpire = 60 * 30;
-
-    // 当前商城ID
-    private int $storeId;
 
     /**
      * 任务处理

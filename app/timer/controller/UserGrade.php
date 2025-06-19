@@ -12,6 +12,7 @@ declare (strict_types=1);
 
 namespace app\timer\controller;
 
+use cores\BaseTimer;
 use app\timer\service\UserGrade as UserGradeService;
 
 /**
@@ -19,16 +20,13 @@ use app\timer\service\UserGrade as UserGradeService;
  * Class UserGrade
  * @package app\timer\controller
  */
-class UserGrade extends Controller
+class UserGrade extends BaseTimer
 {
     // 当前任务唯一标识
-    private string $taskKey = 'UserGrade';
+    protected string $taskKey = 'UserGrade';
 
     // 任务执行间隔时长 (单位:秒)
     protected int $taskExpire = 60 * 30;
-
-    // 当前商城ID
-    private int $storeId;
 
     /**
      * 任务处理

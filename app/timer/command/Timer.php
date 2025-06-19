@@ -32,8 +32,8 @@ class Timer extends Command
     // 定时器句柄/ID
     protected $timer;
 
-    // 时间间隔 (单位: 秒, 默认5秒)
-    protected $interval = 1;
+    // 时间间隔 (单位: 秒, 默认1秒)
+    protected int $interval = 1;
 
     protected function configure()
     {
@@ -50,7 +50,7 @@ class Timer extends Command
         global $argv;
 
         if ($input->hasOption('i'))
-            $this->interval = floatval($input->getOption('i'));
+            $this->interval = (int)$input->getOption('i');
 
         $argv[1] = $input->getArgument('status') ?: 'start';
         if ($input->hasOption('d')) {
@@ -98,9 +98,8 @@ class Timer extends Command
      * 停止/删除定时器
      * @return bool
      */
-    public function stop()
+    public function stop(): bool
     {
         return \Workerman\Lib\Timer::del($this->timer);
     }
-
 }

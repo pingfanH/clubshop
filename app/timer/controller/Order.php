@@ -12,24 +12,22 @@ declare (strict_types=1);
 
 namespace app\timer\controller;
 
-use app\timer\service\Order as OrderService;
+use cores\BaseTimer;
 use app\timer\model\Setting as SettingModel;
+use app\timer\service\Order as OrderService;
 
 /**
  * 定时任务：商城订单
  * Class Order
  * @package app\timer\controller
  */
-class Order extends Controller
+class Order extends BaseTimer
 {
     // 当前任务唯一标识
-    private string $taskKey = 'Order';
+    protected string $taskKey = 'Order';
 
     // 任务执行间隔时长 (单位:秒)
     protected int $taskExpire = 60 * 30;
-
-    // 当前商城ID
-    private int $storeId;
 
     /**
      * 任务处理

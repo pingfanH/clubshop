@@ -12,16 +12,17 @@ declare (strict_types=1);
 
 namespace app\timer\controller;
 
+use cores\BaseTimer;
 use think\facade\Event;
-use app\common\service\system\Process as SystemProcessService;
 use app\timer\model\Store as StoreModel;
+use app\common\service\system\Process as SystemProcessService;
 
 /**
  * 商城定时任务
  * Class Store
  * @package app\timer\controller
  */
-class Store extends Controller
+class Store extends BaseTimer
 {
     /**
      * 任务处理
