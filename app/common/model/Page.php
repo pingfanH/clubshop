@@ -393,24 +393,7 @@ class Page extends BaseModel
                     ]
                 ],
                 // '手动选择' => 默认数据
-                'data' => [
-                    [
-                        'goods_name' => '此处显示商品名称',
-                        'goods_image' => base_url() . 'assets/store/img/diy/goods/01.png',
-                        'goods_price_min' => '99.00',
-                        'line_price_min' => '139.00',
-                        'selling_point' => '此款商品美观大方 不容错过',
-                        'goods_sales' => 100
-                    ],
-                    [
-                        'goods_name' => '此处显示商品名称',
-                        'goods_image' => base_url() . 'assets/store/img/diy/goods/01.png',
-                        'goods_price_min' => '99.00',
-                        'line_price_min' => '139.00',
-                        'selling_point' => '此款商品美观大方 不容错过',
-                        'goods_sales' => 100
-                    ]
-                ]
+                'data' => []
             ],
             'service' => [
                 'name' => '在线客服',

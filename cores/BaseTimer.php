@@ -21,8 +21,8 @@ use think\facade\Cache;
  */
 class BaseTimer
 {
-    // 当前任务唯一标识
-    protected string $taskKey = 'BaseTimer';
+    // 当前任务唯一标识 (由子类定义)
+    protected string $taskKey = '';
 
     // 任务执行间隔时长 (单位:秒)
     protected int $taskExpire = 60 * 30;
