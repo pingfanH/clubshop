@@ -36,7 +36,7 @@ class PaymentTrade extends BaseModel
      */
     public static function detail($where)
     {
-        return self::get($where);
+        return static::get($where);
     }
 
     /**
@@ -76,31 +76,5 @@ class PaymentTrade extends BaseModel
     public static function updateToRefund(int $tradeId): bool
     {
         return static::updateBase(['trade_state' => TradeStatusEnum::REFUND], $tradeId);
-    }
-
-    /**
-     * 根据商户订单号查询记录
-     * @param int $orderId 订单ID
-     * @param int $orderType 订单类型
-     * @return \app\api\model\PaymentTrade|array|\think\Model|null
-     * @throws BaseException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    protected function detailByOrderId(int $orderId, string $method, string $client, int $orderType)
-    {
-        $detail = $this->where('order_id', '=', $orderId)
-            ->where('order_type', '=', $orderType)
-            ->where('client', '=', $client)
-            ->where('pay_method', '=', $method)
-            ->find();
-        if (empty($detail)) {
-            return null;
-        }
-        if (in_array($detail['trade_state'], [TradeStatusEnum::SUCCESS, TradeStatusEnum::REFUND])) {
-            throwError('商户订单号 out_trade_no 已存在');
-        }
-        return $detail;
     }
 }

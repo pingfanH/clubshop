@@ -22,7 +22,7 @@ use app\common\enum\EnumBasics;
 class TradeStatus extends EnumBasics
 {
     // 未支付
-    const NOTPAY = 10;
+    const UNPAID = 10;
 
     // 支付成功
     const SUCCESS = 20;
@@ -40,21 +40,21 @@ class TradeStatus extends EnumBasics
     public static function data(): array
     {
         return [
-            self::NOTPAY => [
+            self::UNPAID => [
                 'name' => '未支付',
-                'value' => self::NOTPAY,
+                'value' => self::UNPAID
             ],
             self::SUCCESS => [
                 'name' => '支付成功',
-                'value' => self::SUCCESS,
+                'value' => self::SUCCESS
             ],
             self::REFUND => [
                 'name' => '转入退款',
-                'value' => self::REFUND,
+                'value' => self::REFUND
             ],
             self::CLOSED => [
                 'name' => '已关闭',
-                'value' => self::CLOSED,
+                'value' => self::CLOSED
             ]
         ];
     }

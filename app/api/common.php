@@ -19,7 +19,7 @@ declare (strict_types=1);
 function getPlatform(): ?string
 {
     static $value = null;
-    // 从header中获取 channel
+    // 从header中获取 platform
     empty($value) && $value = request()->header('platform');
     // 调试模式下可通过param中获取
     if (is_debug() && empty($value)) {
