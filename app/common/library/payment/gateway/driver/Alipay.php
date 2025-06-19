@@ -323,7 +323,7 @@ class Alipay extends Driver
      */
     private function notifyUrl(): string
     {
-        // 例如：https://www.xxxx.com/alipayNotice.php
-        return base_url() . 'alipayNotice.php';
+        // 例如：https://www.xxxx.com/alipay.php
+        return base_url() . 'notice/alipay.php';
     }
 }

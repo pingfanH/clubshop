@@ -410,8 +410,8 @@ class V2
      */
     private function notifyUrl(): string
     {
-        // 例如：https://www.xxxx.com/wxpayNoticeV2.php
-        return base_url() . 'wxpayNoticeV2.php';
+        // 例如：https://www.xxxx.com/wxpayV2.php
+        return base_url() . 'notice/wxpayV2.php';
     }
 
     /**

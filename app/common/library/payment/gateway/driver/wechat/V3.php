@@ -535,8 +535,8 @@ class V3
      */
     private function notifyUrl(): string
     {
-        // 例如：https://www.xxxx.com/wxpayNoticeV3.php
-        return base_url() . 'wxpayNoticeV3.php';
+        // 例如：https://www.xxxx.com/wxpayV3.php
+        return base_url() . 'notice/wxpayV3.php';
     }
 
     /**
