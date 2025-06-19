@@ -49,7 +49,7 @@ class PaymentTrade extends BaseModel
     {
         $detail = static::detail(['out_trade_no' => $outTradeNo]);
         if (empty($detail)) {
-            throwError('第三方支付交易记录不存在');
+            throwError("第三方支付交易记录不存在 {$outTradeNo}");
         }
         return $detail;
     }

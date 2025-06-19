@@ -143,7 +143,7 @@ class PaySuccess extends BaseService
             !isset($this->paymentData['tradeNo']) && throwError('PaymentData not found');
         }
         // 记录日志
-        Log::append('PaySuccess', [
+        Log::append('PaySuccess --handle', [
             'orderNo' => $this->orderNo, 'method' => $this->method,
             'tradeId' => $this->tradeId, 'paymentData' => $this->paymentData
         ]);

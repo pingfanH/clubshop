@@ -176,7 +176,7 @@ class V2
                 return false;
             }
             // 记录日志
-            Log::append('Wechat-notify', ['message' => '微信异步回调验证成功']);
+            Log::append('Wechat-notify', ['message' => '微信异步回调验证成功', 'notifyParams' => $this->notifyParams]);
         } catch (\EasyWeChat\Payment\Kernel\Exceptions\InvalidSignException $e) {
             // 签名验证错误
             $this->notifyPaidError('签名验证错误');
