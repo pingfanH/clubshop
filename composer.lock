@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8207fe9341ea69e087b7ad94ad40eb1f",
+    "content-hash": "e288c6404b8c1466d369931fc8b25854",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -482,6 +482,73 @@
                 "source": "https://github.com/ezyang/htmlpurifier/tree/v4.14.0"
             },
             "time": "2021-12-25T01:21:49+00:00"
+        },
+        {
+            "name": "godruoyi/php-snowflake",
+            "version": "3.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/godruoyi/php-snowflake.git",
+                "reference": "b82b313f353e4cf3198b9e6286cd1b5e023e8626"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/godruoyi/php-snowflake/zipball/b82b313f353e4cf3198b9e6286cd1b5e023e8626",
+                "reference": "b82b313f353e4cf3198b9e6286cd1b5e023e8626",
+                "shasum": ""
+            },
+            "require": {
+                "php-64bit": ">=8.1"
+            },
+            "require-dev": {
+                "ext-redis": "*",
+                "ext-swoole": "*",
+                "illuminate/contracts": "^10.0 || ^11.0",
+                "laravel/pint": "^1.10",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10",
+                "predis/predis": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Godruoyi\\Snowflake\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Godruoyi",
+                    "email": "g@godruoyi.com"
+                }
+            ],
+            "description": "An ID Generator for PHP based on Snowflake Algorithm (Twitter announced).",
+            "homepage": "https://github.com/godruoyi/php-snowflake",
+            "keywords": [
+                "Unique ID",
+                "laravel snowflake",
+                "order id",
+                "php snowflake",
+                "php sonyflake",
+                "php unique id",
+                "snowflake algorithm",
+                "sonyflake",
+                "unique order id"
+            ],
+            "support": {
+                "issues": "https://github.com/godruoyi/php-snowflake/issues",
+                "source": "https://github.com/godruoyi/php-snowflake/tree/3.2.1"
+            },
+            "funding": [
+                {
+                    "url": "https://images.godruoyi.com/wechat.png",
+                    "type": "custom"
+                }
+            ],
+            "time": "2025-05-01T02:35:04+00:00"
         },
         {
             "name": "guzzlehttp/command",
@@ -4893,6 +4960,7 @@
         "ext-simplexml": "*",
         "ext-zlib": "*",
         "ext-zip": "*",
+        "ext-redis": "*",
         "ext-fileinfo": "*"
     },
     "platform-dev": [],

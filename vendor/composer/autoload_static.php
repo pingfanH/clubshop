@@ -134,6 +134,7 @@ class ComposerStaticInitb17d9cf9df517c3dd2f492a1c933c315
             'GuzzleHttp\\Command\\' => 19,
             'GuzzleHttp\\' => 11,
             'Grafika\\' => 8,
+            'Godruoyi\\Snowflake\\' => 19,
             'GatewayWorker\\' => 14,
         ),
         'E' => 
@@ -388,6 +389,10 @@ class ComposerStaticInitb17d9cf9df517c3dd2f492a1c933c315
         'Grafika\\' => 
         array (
             0 => __DIR__ . '/..' . '/kosinix/grafika/src/Grafika',
+        ),
+        'Godruoyi\\Snowflake\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/godruoyi/php-snowflake/src',
         ),
         'GatewayWorker\\' => 
         array (

@@ -63,6 +63,7 @@ return array(
     'GuzzleHttp\\Command\\' => array($vendorDir . '/guzzlehttp/command/src'),
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Grafika\\' => array($vendorDir . '/kosinix/grafika/src/Grafika'),
+    'Godruoyi\\Snowflake\\' => array($vendorDir . '/godruoyi/php-snowflake/src'),
     'GatewayWorker\\' => array($vendorDir . '/workerman/gateway-worker/src'),
     'EasyWeChat\\' => array($vendorDir . '/overtrue/wechat/src'),
     'EasyWeChatComposer\\' => array($vendorDir . '/easywechat-composer/easywechat-composer/src'),
