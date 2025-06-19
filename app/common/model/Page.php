@@ -447,16 +447,19 @@ class Page extends BaseModel
                         'min_price' => '100.00',
                         'coupon_type' => 10,
                         'reduce_price' => '10',
+                        'state' => ['text' => '正常', 'value' => 1]
                     ],
                     [
                         'min_price' => '200.00',
                         'coupon_type' => 10,
                         'reduce_price' => '20',
+                        'state' => ['text' => '正常', 'value' => 1]
                     ],
                     [
                         'min_price' => '300.00',
                         'coupon_type' => 10,
                         'reduce_price' => '30',
+                        'state' => ['text' => '正常', 'value' => 1]
                     ]
                 ],
                 // '手动选择' => 默认数据
