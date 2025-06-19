@@ -91,7 +91,7 @@ class OrderRefund extends BaseModel
      */
     public function getSendTimeAttr($value)
     {
-        return format_time($value);
+        return \format_time($value);
     }
 
     /**

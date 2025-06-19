@@ -282,7 +282,7 @@ class Order extends OrderModel
             'order_status' => $orderInfo['order_status'],
             'create_time' => $orderInfo['create_time'],
             'showExpiration' => $orderCloseTime > 0,
-            'expirationTime' => format_time($expirationTime),
+            'expirationTime' => \format_time($expirationTime),
         ];
     }
 

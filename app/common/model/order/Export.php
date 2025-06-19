@@ -34,7 +34,7 @@ class Export extends BaseModel
      */
     public function getStartTimeAttr($value): string
     {
-        return format_time($value, false);
+        return \format_time($value, false);
     }
 
     /**
@@ -44,7 +44,7 @@ class Export extends BaseModel
      */
     public function getEndTimeAttr($value): string
     {
-        return format_time($value, false);
+        return \format_time($value, false);
     }
 
     /**

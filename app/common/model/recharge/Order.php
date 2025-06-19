@@ -55,7 +55,7 @@ class Order extends BaseModel
      */
     public function getPayTimeAttr($value)
     {
-        return format_time($value);
+        return \format_time($value);
     }
 
     /**
