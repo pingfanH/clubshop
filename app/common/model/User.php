@@ -210,7 +210,7 @@ class User extends BaseModel
             'user_id' => $userId,
             'value' => $points,
             'describe' => $describe,
-            'store_id' => $storeId
+            'store_id' => $storeId ?: static::$storeId
         ]);
         // 更新用户可用积分
         return (new static)->setInc($userId, 'points', $points);

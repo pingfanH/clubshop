@@ -314,9 +314,8 @@ class Payment extends BaseService
      */
     private function orderPaySucces(string $orderNo, ?int $tradeId = null, array $paymentData = []): void
     {
-        // 获取订单详情
-        $service = new OrderPaySuccesService;
         // 订单支付成功业务处理
+        $service = new OrderPaySuccesService;
         $service->setOrderNo($orderNo)->setMethod($this->method)->setTradeId($tradeId)->setPaymentData($paymentData);
         if (!$service->handle()) {
             throwError($service->getError() ?: '订单支付失败');

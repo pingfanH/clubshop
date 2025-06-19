@@ -12,25 +12,35 @@ declare (strict_types=1);
 
 namespace app\api\service\order;
 
-use app\api\model\User as UserModel;
-use app\api\model\Goods as GoodsModel;
-use app\api\model\Order as OrderModel;
-use app\api\model\Setting as SettingModel;
-use app\api\model\UserCoupon as UserCouponModel;
-use app\api\service\User as UserService;
-use app\api\service\user\Grade as UserGradeService;
-use app\api\service\coupon\GoodsDeduct as GoodsDeductService;
-use app\api\service\points\GoodsDeduct as PointsDeductService;
-use app\api\service\order\source\checkout\Factory as CheckoutFactory;
-use app\common\enum\Setting as SettingEnum;
-use app\common\enum\DiscountType as DiscountTypeEnum;
-use app\common\enum\order\OrderType as OrderTypeEnum;
-use app\common\enum\order\OrderStatus as OrderStatusEnum;
-use app\common\enum\order\OrderSource as OrderSourceEnum;
-use app\common\enum\order\DeliveryType as DeliveryTypeEnum;
-use app\common\service\BaseService;
-use app\common\service\delivery\Express as ExpressService;
-use app\common\service\goods\source\Factory as StockFactory;
+use app\api\model\{
+    User as UserModel,
+    Goods as GoodsModel,
+    Order as OrderModel,
+    Setting as SettingModel,
+    UserCoupon as UserCouponModel,
+};
+use app\api\service\{
+    User as UserService,
+    user\Grade as UserGradeService,
+    coupon\GoodsDeduct as GoodsDeductService,
+    order\PaySuccess as OrderPaySuccesService,
+    points\GoodsDeduct as PointsDeductService,
+    order\source\checkout\Factory as CheckoutFactory,
+};
+use app\common\enum\{
+    Setting as SettingEnum,
+    DiscountType as DiscountTypeEnum,
+    payment\Method as PaymentMethodEnum,
+    order\OrderType as OrderTypeEnum,
+    order\OrderStatus as OrderStatusEnum,
+    order\OrderSource as OrderSourceEnum,
+    order\DeliveryType as DeliveryTypeEnum,
+};
+use app\common\service\{
+    BaseService,
+    delivery\Express as ExpressService,
+    goods\source\Factory as StockFactory
+};
 use app\common\library\helper;
 use cores\exception\BaseException;
 
@@ -89,6 +99,9 @@ class Checkout extends BaseService
      * @var array
      */
     private array $orderData = [];
+
+    // 是否已支付 (仅积分商品兑换时)
+    private bool $isPaySuccess = false;
 
     /**
      * 构造函数
@@ -196,10 +209,10 @@ class Checkout extends BaseService
         // 计算订单积分赠送数量
         $this->setOrderPointsBonus();
         // 返回订单数据
-        return array_merge([
+        return \array_merge([
             'goodsList' => $this->goodsList,   // 商品信息
             'orderTotalNum' => $orderTotalNum,        // 商品总数量
-            'couponList' => array_values($couponList), // 优惠券列表
+            'couponList' => \array_values($couponList), // 优惠券列表
             'hasError' => $this->hasError(),
             'errorMsg' => $this->getError(),
         ], $this->orderData);
@@ -391,9 +404,9 @@ class Checkout extends BaseService
         // 积分设置
         $pointsSetting = SettingModel::getItem(SettingEnum::POINTS);
         return [
-            'deliveryType' => $deliveryType,                     // 支持的配送方式
-            'points_name' => $pointsSetting['points_name'],      // 积分名称
-            'points_describe' => $pointsSetting['describe'],     // 积分说明
+            'deliveryType' => $deliveryType,                       // 支持的配送方式
+            'points_name' => $pointsSetting['points_name'],        // 积分名称
+            'points_describe' => $pointsSetting['describe'],       // 积分说明
         ];
     }
 
@@ -409,6 +422,15 @@ class Checkout extends BaseService
             'points' => $this->user['points'],
             'address_id' => $this->user['address_id'],
         ];
+    }
+
+    /**
+     * 获取订单是否已支付成功
+     * @return bool
+     */
+    public function isPaySuccess(): bool
+    {
+        return $this->isPaySuccess;
     }
 
     /**
@@ -724,9 +746,9 @@ class Checkout extends BaseService
         $this->updateGoodsStockNum($order);
         // 设置优惠券使用状态
         $order['couponId'] > 0 && UserCouponModel::setIsUse((int)$order['couponId']);
-        // 积分抵扣情况下扣除用户积分
+        // 积分抵扣: 扣除用户可用积分
         if ($order['isAllowPoints'] && $order['isUsePoints'] && $order['pointsNum'] > 0) {
-            $describe = "用户消费：{$this->model['order_no']}";
+            $describe = "订单抵扣：{$this->model['order_no']}";
             UserModel::setIncPoints($this->user['user_id'], -$order['pointsNum'], $describe);
         }
         // 获取订单详情
@@ -815,7 +837,7 @@ class Checkout extends BaseService
             'order_source_data' => $this->orderSource['sourceData'],
             'points_bonus' => $order['pointsBonus'],
             'order_status' => OrderStatusEnum::NORMAL,
-            'platform' => getPlatform(),
+            'platform' => \getPlatform(),
             'store_id' => $this->storeId,
         ];
         if ($order['delivery'] == DeliveryTypeEnum::EXPRESS) {
