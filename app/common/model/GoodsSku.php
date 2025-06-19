@@ -103,6 +103,7 @@ class GoodsSku extends BaseModel
     {
         return (new static)->with($withImage ? ['image'] : [])
             ->where('goods_id', '=', $goodsId)
+            ->order(['id' => 'asc'])
             ->select();
     }
 
