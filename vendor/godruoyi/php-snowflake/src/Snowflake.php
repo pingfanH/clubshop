@@ -39,7 +39,7 @@ class Snowflake
     /**
      * The Sequence Resolver instance.
      */
-    protected SequenceResolver|null|Closure $sequence = null;
+    protected $sequence = null;
 
     /**
      * The start timestamp.
@@ -54,7 +54,7 @@ class Snowflake
     /**
      * Build Snowflake Instance.
      */
-    public function __construct(int $datacenter = -1, int $workerId = -1)
+    public function __construct(int $datacenter = 0, int $workerId = 0)
     {
         $maxDataCenter = -1 ^ (-1 << self::MAX_DATACENTER_LENGTH);
         $maxWorkId = -1 ^ (-1 << self::MAX_WORKID_LENGTH);
@@ -141,7 +141,7 @@ class Snowflake
     /**
      * Get start timestamp (millisecond), If not set default to 2019-08-08 08:08:08.
      */
-    public function getStartTimeStamp(): float|int
+    public function getStartTimeStamp()
     {
         if (! is_null($this->startTime)) {
             return $this->startTime;
@@ -156,7 +156,7 @@ class Snowflake
     /**
      * Set Sequence Resolver.
      */
-    public function setSequenceResolver(Closure|SequenceResolver $sequence): self
+    public function setSequenceResolver($sequence): self
     {
         $this->sequence = $sequence;
 
@@ -166,7 +166,7 @@ class Snowflake
     /**
      * Get Sequence Resolver.
      */
-    public function getSequenceResolver(): null|Closure|SequenceResolver
+    public function getSequenceResolver()
     {
         return $this->sequence;
     }
