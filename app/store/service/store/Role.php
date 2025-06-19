@@ -94,6 +94,11 @@ class Role extends BaseService
         return $actionEntitySet;
     }
 
+    /**
+     * 整理菜单列表的actions
+     * @param $menuList
+     * @return array
+     */
     private static function filterChildrenAction($menuList): array
     {
         $list = [];
@@ -102,11 +107,7 @@ class Role extends BaseService
                 continue;
             }
             if (!empty($item['children'])) {
-                // 整理actions
-                $item['actions'] = array_filter($item['children'], function ($val) {
-                    return $val['type'] == MenuTypeEnum::ACTION;
-                });
-                // 整理children
+                $item['actions'] = \array_filter($item['children'], fn($val) => $val['type'] == MenuTypeEnum::ACTION);
                 $item['children'] = static::filterChildrenAction($item['children']);
             }
             $list[] = $item;
@@ -130,7 +131,7 @@ class Role extends BaseService
         $menuIds = RoleMenuModel::getMenuIds($roleIds);
         // 获取指定角色ID的菜单列表
         $menuList = MenuModel::getListByIds($menuIds);
-        //  整理菜单列表的actions
+        // 整理菜单列表的actions
         return static::filterChildrenAction($menuList);
     }
 }

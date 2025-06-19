@@ -95,9 +95,7 @@ class UserAddress extends UserAddressModel
         if (count($data['region']) != 3) {
             throwError('省市区数据不正确');
         }
-        return array_map(function ($item) {
-            return $item['value'];
-        }, $data['region']);
+        return \array_map(fn($item) => $item['value'], $data['region']);
     }
 
     /**

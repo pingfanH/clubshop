@@ -45,7 +45,7 @@ class Kd100 extends Driver
                 'com' => $code,
                 'num' => $expressNo,
                 // 顺丰参数 (需传参收、寄件人的电话号码)
-                'phone' =>  $code === 'shunfeng' ? $extra['phone']: ''
+                'phone' => $code === 'shunfeng' ? $extra['phone'] : ''
             ])
         ];
         $param['sign'] = strtoupper(md5($param['param'] . $this->options['key'] . $param['customer']));
@@ -69,9 +69,7 @@ class Kd100 extends Driver
      */
     private function formatTraces(array $source): array
     {
-        return array_map(function ($item) {
-            return ['time' => $item['ftime'], 'context' => $item['context']];
-        }, $source);
+        return \array_map(fn($item) => ['time' => $item['ftime'], 'context' => $item['context']], $source);
     }
 
     /**

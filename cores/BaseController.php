@@ -51,7 +51,7 @@ abstract class BaseController
      * BaseController constructor.
      * @param App $app
      */
-    public function __construct(App $app)
+    public final function __construct(App $app)
     {
         $this->app = $app;
         $this->request = $this->app->request;

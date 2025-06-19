@@ -84,12 +84,10 @@ class Comment extends BaseModel
      */
     protected function addCommentImages(array $images): bool
     {
-        $data = array_map(function ($imageId) {
-            return [
-                'image_id' => $imageId,
-                'store_id' => self::$storeId
-            ];
-        }, $images);
+        $data = \array_map(fn($imageId) => [
+            'image_id' => $imageId,
+            'store_id' => self::$storeId
+        ], $images);
         return $this->image()->saveAll($data) !== false;
     }
 }

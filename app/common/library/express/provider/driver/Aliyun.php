@@ -41,7 +41,7 @@ class Aliyun extends Driver
         $appCode = $this->options['appCode'];
         $headers = ["Authorization: APPCODE " . $appCode];
         // 查询顺丰和中通时 物流单号需要加上手机尾号
-        if ( in_array($code, ['SF', 'ZTO'])) {
+        if (\in_array($code, ['SF', 'ZTO'])) {
             $lastPhoneNumber = \mb_substr($extra['phone'], -4);
             $expressNo = "{$expressNo}:$lastPhoneNumber";
         }
@@ -67,9 +67,8 @@ class Aliyun extends Driver
      */
     private function formatTraces(array $source): array
     {
-        return array_map(function ($item) {
-            return ['time' => $item['AcceptTime'], 'context' => $item['AcceptStation']];
-        }, array_reverse($source));
+        return \array_map(fn($item) => ['time' => $item['AcceptTime'], 'context' => $item['AcceptStation']]
+            , array_reverse($source));
     }
 
     /**

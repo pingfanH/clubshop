@@ -200,9 +200,9 @@ abstract class Basics
      */
     private function hashName(): string
     {
-        return $this->file->hashName(function () {
-            return date('Ymd') . DIRECTORY_SEPARATOR . md5(uniqid((string)mt_rand(), true));
-        });
+        return $this->file->hashName(
+            fn() => \date('Ymd') . DIRECTORY_SEPARATOR . \md5(\uniqid((string)\mt_rand(), true))
+        );
     }
 
     /**
