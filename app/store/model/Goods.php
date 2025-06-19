@@ -232,6 +232,9 @@ class Goods extends GoodsModel
         $data['is_enable_grade'] == 0 && $data['is_alone_grade'] = 0;
         $aloneGradeEquity = [];
         if ($data['is_alone_grade'] == 1) {
+            if (empty($data['alone_grade_equity'])) {
+                throwError('很抱歉，请先添加会员等级后再设置会员折扣价');
+            }
             foreach ($data['alone_grade_equity'] as $key => $value) {
                 $gradeId = str_replace('grade_id:', '', $key);
                 $aloneGradeEquity[$gradeId] = $value;
