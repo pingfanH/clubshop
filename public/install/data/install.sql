@@ -1734,6 +1734,10 @@ INSERT INTO `yoshop_region` VALUES ('1008', '云和县', '1002', '331125', '3');
 INSERT INTO `yoshop_region` VALUES ('1009', '庆元县', '1002', '331126', '3');
 INSERT INTO `yoshop_region` VALUES ('1010', '景宁畲族自治县', '1002', '331127', '3');
 INSERT INTO `yoshop_region` VALUES ('1011', '龙泉市', '1002', '331181', '3');
+
+# DROP TABLE IF EXISTS `xxx`; -- 仅分割步骤使用实际不执行
+# CREATE TABLE `yoshop_region 2` (`id` int(11) AUTO_INCREMENT, PRIMARY KEY (`id`)) ENGINE=InnoDB COMMENT='仅分割步骤使用实际不执行';
+
 INSERT INTO `yoshop_region` VALUES ('1012', '安徽省', '0', '340000', '1');
 INSERT INTO `yoshop_region` VALUES ('1013', '合肥市', '1012', '340100', '2');
 INSERT INTO `yoshop_region` VALUES ('1014', '瑶海区', '1013', '340102', '3');
@@ -2734,6 +2738,10 @@ INSERT INTO `yoshop_region` VALUES ('2031', '源城区', '2030', '441602', '3');
 INSERT INTO `yoshop_region` VALUES ('2032', '紫金县', '2030', '441621', '3');
 INSERT INTO `yoshop_region` VALUES ('2033', '龙川县', '2030', '441622', '3');
 INSERT INTO `yoshop_region` VALUES ('2034', '连平县', '2030', '441623', '3');
+
+# DROP TABLE IF EXISTS `xxx`; -- 仅分割步骤使用实际不执行
+# CREATE TABLE `yoshop_region 3` (`id` int(11) AUTO_INCREMENT, PRIMARY KEY (`id`)) ENGINE=InnoDB COMMENT='仅分割步骤使用实际不执行';
+
 INSERT INTO `yoshop_region` VALUES ('2035', '和平县', '2030', '441624', '3');
 INSERT INTO `yoshop_region` VALUES ('2036', '东源县', '2030', '441625', '3');
 INSERT INTO `yoshop_region` VALUES ('2037', '阳江市', '1925', '441700', '2');
@@ -3734,6 +3742,10 @@ INSERT INTO `yoshop_region` VALUES ('3067', '银川市', '3066', '640100', '2');
 INSERT INTO `yoshop_region` VALUES ('3068', '兴庆区', '3067', '640104', '3');
 INSERT INTO `yoshop_region` VALUES ('3069', '西夏区', '3067', '640105', '3');
 INSERT INTO `yoshop_region` VALUES ('3070', '金凤区', '3067', '640106', '3');
+
+# DROP TABLE IF EXISTS `xxx`; -- 仅分割步骤使用实际不执行
+# CREATE TABLE `yoshop_region 4` (`id` int(11) AUTO_INCREMENT, PRIMARY KEY (`id`)) ENGINE=InnoDB COMMENT='仅分割步骤使用实际不执行';
+
 INSERT INTO `yoshop_region` VALUES ('3071', '永宁县', '3067', '640121', '3');
 INSERT INTO `yoshop_region` VALUES ('3072', '贺兰县', '3067', '640122', '3');
 INSERT INTO `yoshop_region` VALUES ('3073', '灵武市', '3067', '640181', '3');
@@ -5628,6 +5640,10 @@ INSERT INTO `yoshop_store_menu_api` VALUES ('10888', '10188', '11250', '16145568
 INSERT INTO `yoshop_store_menu_api` VALUES ('10889', '10188', '11246', '1614556800');
 INSERT INTO `yoshop_store_menu_api` VALUES ('10890', '10188', '11185', '1614556800');
 INSERT INTO `yoshop_store_menu_api` VALUES ('10891', '10189', '11251', '1614556800');
+
+# DROP TABLE IF EXISTS `xxx`; -- 仅分割步骤使用实际不执行
+# CREATE TABLE `yoshop_store_menu_api 2` (`id` int(11) AUTO_INCREMENT, PRIMARY KEY (`id`)) ENGINE=InnoDB COMMENT='仅分割步骤使用实际不执行';
+
 INSERT INTO `yoshop_store_menu_api` VALUES ('10892', '10189', '11132', '1614556800');
 INSERT INTO `yoshop_store_menu_api` VALUES ('10893', '10189', '11076', '1614556800');
 INSERT INTO `yoshop_store_menu_api` VALUES ('10894', '10191', '11253', '1614556800');
