@@ -1,0 +1,1 @@
+APP_DEBUG = false[APP]DEFAULT_TIMEZONE = Asia/Shanghai[DATABASE]TYPE = mysqlHOSTNAME = ~db_host~DATABASE = ~db_name~USERNAME = ~db_user~PASSWORD = ~db_pwd~HOSTPORT = ~db_port~CHARSET = ~db_charset~DEBUG = false[CACHE]DRIVER = file[REDIS]HOSTNAME = 127.0.0.1HOSTPORT = 6379PASSWORD =SELECT = 0[LANG]default_lang = zh-cn

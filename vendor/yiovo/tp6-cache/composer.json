@@ -1,0 +1,21 @@
+{
+  "name": "yiovo/tp6-cache",
+  "description": "tp6-cache",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "yiovo",
+      "email": "developer@yiovo.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.0",
+    "topthink/framework": "^6.0.0"
+  },
+  "homepage": "https://github.com/yiovo/tp6-captcha",
+  "autoload": {
+    "psr-4": {
+      "yiovo\\cache\\": "src"
+    }
+  }
+}
