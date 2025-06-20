@@ -1,1 +1,0 @@
-import{E as e}from"./index-DVbFeFXr.js";const a=new e([{key:"WECHAT",name:"微信支付",value:"wechat"},{key:"ALIPAY",name:"支付宝支付",value:"alipay"},{key:"BALANCE",name:"余额支付",value:"balance"}]);export{a as P};
