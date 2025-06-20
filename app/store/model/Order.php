@@ -127,7 +127,7 @@ class Order extends OrderModel
                 50 => ['address.phone', 'like', "%{$params['searchValue']}%"],
                 60 => ['trade.out_trade_no', 'like', "%{$params['searchValue']}%"],
             ];
-            array_key_exists($params['searchType'], $searchWhere) && $filter[] = $searchWhere[$params['searchType']];
+            \array_key_exists($params['searchType'], $searchWhere) && $filter[] = $searchWhere[$params['searchType']];
         }
         // 起止时间
         if (!empty($params['betweenTime'])) {
@@ -136,11 +136,11 @@ class Order extends OrderModel
             $filter[] = ['order.create_time', '<', $times['end_time'] + 86400];
         }
         // 订单来源
-        $params['orderSource'] > -1 && $filter[] = ['order_source', '=', (int)$params['orderSource']];
+        $params['orderSource'] > -1 && $filter[] = ['order.order_source', '=', (int)$params['orderSource']];
         // 支付方式
-        !empty($params['payMethod']) && $filter[] = ['pay_method', '=', $params['payMethod']];
+        !empty($params['payMethod']) && $filter[] = ['order.pay_method', '=', $params['payMethod']];
         // 配送方式
-        $params['deliveryType'] > -1 && $filter[] = ['delivery_type', '=', (int)$params['deliveryType']];
+        $params['deliveryType'] > -1 && $filter[] = ['order.delivery_type', '=', (int)$params['deliveryType']];
         // 会员ID
         $params['userId'] > 0 && $filter[] = ['order.user_id', '=', (int)$params['userId']];
         return $filter;
