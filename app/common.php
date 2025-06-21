@@ -71,7 +71,8 @@ function tre($content)
 function throwError(string $message, ?int $status = null, array $data = [])
 {
     is_null($status) && $status = config('status.error');
-    throw new BaseException(['status' => $status, 'message' => $message, 'data' => $data]);
+    $data = \array_merge(['isPrompt' => true], $data);
+    throw new BaseException(compact('status', 'message', 'data'));
 }
 
 /**
