@@ -1,0 +1,1 @@
+import{$ as d}from"./index-BR_epvkd.js";const e="refund/list",r="refund/goods",o="refund/apply",s="refund/detail",f="refund/delivery",t=(r,o)=>d.get(e,r,o),a=(e,o)=>d.get(r,{orderGoodsId:e,...o}),n=(e,r)=>d.post(o,{orderGoodsId:e,form:r}),u=(e,r)=>d.get(s,{orderRefundId:e,...r}),p=(e,r)=>d.post(f,{orderRefundId:e,form:r});export{p as a,n as b,u as d,a as g,t as l};

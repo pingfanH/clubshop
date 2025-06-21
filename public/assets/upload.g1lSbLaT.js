@@ -1,0 +1,1 @@
+import{$ as e}from"./index-BR_epvkd.js";const i=(i,a=!0)=>new Promise(((t,o)=>{e.urlFileUpload({name:"file",files:i,maxSize:2097152,data:{test:123,checkLogin:Number(a)}}).then((e=>t(e.map((e=>e.data.fileInfo.file_id)),e))).catch(o)}));export{i};

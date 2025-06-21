@@ -1,0 +1,1 @@
+import{$ as s}from"./index-BR_epvkd.js";const e="user/info",o="user/assets",r="user/bindMobile",t="user/personal",a=(o,r)=>{const t={isPrompt:!0,load:!0,...r};return s.get(e,o,t)},i=(e,r)=>s.get(o,e,r),n=(e,o)=>s.post(r,e,o),p=(e,o)=>s.post(t,e,o);export{i as a,n as b,a as i,p};

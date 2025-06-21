@@ -1,0 +1,1 @@
+import{c as o,a9 as r,o as e}from"./index-BR_epvkd.js";import{_ as s}from"./_plugin-vue_export-helper.BCo6x5W8.js";const t=s({data:()=>({url:""}),onLoad({src:o}){this.url=decodeURIComponent(o),console.log("web-view",o,this.url)},methods:{}},[["render",function(s,t,n,l,a,u){const c=r;return e(),o(c,{src:a.url},null,8,["src"])}]]);export{t as default};

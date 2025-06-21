@@ -1,0 +1,1 @@
+import{E as e}from"./index-BR_epvkd.js";const a=new e([{key:"WECHAT",name:"微信支付",value:"wechat"},{key:"ALIPAY",name:"支付宝支付",value:"alipay"},{key:"BALANCE",name:"余额支付",value:"balance"}]),n=new e([{key:"APP",name:"APP端",value:"APP"},{key:"H5",name:"H5端",value:"H5"},{key:"MP_WEIXIN",name:"微信小程序端",value:"MP-WEIXIN"}]);export{n as C,a as P};

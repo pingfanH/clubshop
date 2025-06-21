@@ -1,0 +1,1 @@
+import{$ as o}from"./index-BR_epvkd.js";const s="cart/list",t="cart/total",a="cart/add",d="cart/update",r="cart/clear",c=()=>o.get(s,{},{load:!1}),g=()=>o.get(t,{},{load:!1}),p=(s,t,d)=>o.post(a,{goodsId:s,goodsSkuId:t,goodsNum:d}),e=(s,t,a)=>o.post(d,{goodsId:s,goodsSkuId:t,goodsNum:a},{isPrompt:!1}),l=(s=[])=>o.post(r,{cartIds:s});export{p as a,l as c,c as l,g as t,e as u};

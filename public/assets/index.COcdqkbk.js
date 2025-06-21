@@ -1,0 +1,1 @@
+import{$ as s}from"./index-BR_epvkd.js";const o="goods/list",t="goods/detail",d="goods/specData",e=(t,d)=>s.get(o,t,d),a=(o,d=!0,e={})=>(d=Number(d),s.get(t,{goodsId:o,verifyStatus:d,...e})),g=o=>s.get(d,{goodsId:o});export{a as d,e as l,g as s};
