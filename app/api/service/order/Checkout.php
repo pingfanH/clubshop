@@ -23,7 +23,7 @@ use app\api\service\{
     User as UserService,
     user\Grade as UserGradeService,
     coupon\GoodsDeduct as GoodsDeductService,
-    order\PaySuccess as OrderPaySuccesService,
+    order\PaySuccess as OrderPaySuccessService,
     points\GoodsDeduct as PointsDeductService,
     order\source\checkout\Factory as CheckoutFactory,
 };

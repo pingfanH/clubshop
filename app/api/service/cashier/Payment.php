@@ -17,7 +17,7 @@ use app\api\model\Payment as PaymentModel;
 use app\api\model\PaymentTrade as PaymentTradeModel;
 use app\api\service\User as UserService;
 use app\api\service\Order as OrderService;
-use app\api\service\order\PaySuccess as OrderPaySuccesService;
+use app\api\service\order\PaySuccess as OrderPaySuccessService;
 use app\api\service\order\source\Factory as OrderSourceFactory;
 use app\common\service\BaseService;
 use app\common\enum\Client as ClientEnum;
@@ -315,7 +315,7 @@ class Payment extends BaseService
     private function orderPaySuccess(string $orderNo, ?int $tradeId = null, array $paymentData = []): void
     {
         // 订单支付成功业务处理
-        $service = new OrderPaySuccesService;
+        $service = new OrderPaySuccessService;
         $service->setOrderNo($orderNo)->setMethod($this->method)->setTradeId($tradeId)->setPaymentData($paymentData);
         if (!$service->handle()) {
             throwError($service->getError() ?: '订单支付失败');

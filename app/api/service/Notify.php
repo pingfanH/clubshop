@@ -168,7 +168,7 @@ class Notify
     private function orderPaySuccess(PaymentTradeModel $tradeInfo, array $paymentData)
     {
         // 记录日志
-        Log::append('Notify-orderPaySucces', [
+        Log::append('Notify-orderPaySuccess', [
             'orderType' => OrderTypeEnum::data()[$tradeInfo['order_type']]['name'],
             'tradeInfo' => $tradeInfo->toArray(),
         ]);
@@ -191,10 +191,10 @@ class Notify
                     ->setPaymentData($paymentData)
                     ->handle();
             }
-            Log::append('Notify-orderPaySucces', ['message' => '订单支付成功']);
+            Log::append('Notify-orderPaySuccess', ['message' => '订单支付成功']);
         } catch (\Throwable $e) {
             // 记录错误日志
-            Log::append('Notify-orderPaySucces', ['errMessage' => $e->getMessage()]);
+            Log::append('Notify-orderPaySuccess', ['errMessage' => $e->getMessage()]);
         }
     }
 
