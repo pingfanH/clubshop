@@ -163,9 +163,7 @@ class Cart extends BaseService
         $model = new CartModel;
         // 检索查询条件
         $filter = [];
-        if (!empty($cartIds)) {
-            $filter[] = ['id', 'in', $cartIds];
-        }
+        !empty($cartIds) && $filter[] = ['id', 'in', $cartIds];
         // 查询列表记录
         return $model->where($filter)
             ->where('user_id', '=', $userId)

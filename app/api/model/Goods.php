@@ -138,10 +138,7 @@ class Goods extends GoodsModel
      */
     public function getBasic(int $goodsId, bool $verifyStatus = true)
     {
-        // 关联查询(商品图片)
-        $with = ['images.file'];
-        // 获取商品记录
-        return $this->getGoodsMain($goodsId, $with, $verifyStatus);
+        return $this->getGoodsMain($goodsId, ['images.file'], $verifyStatus);
     }
 
     /**

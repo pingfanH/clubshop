@@ -5,3 +5,22 @@
 ALTER TABLE `yoshop_store`
 ADD COLUMN `remark` varchar(500) NOT NULL DEFAULT '' COMMENT '备注信息' AFTER `logo_image_id`;
 
+DELETE FROM `yoshop_store_menu` WHERE (`menu_id`='10075');
+DELETE FROM `yoshop_store_menu` WHERE (`menu_id`='10076');
+UPDATE `yoshop_store_menu` SET `sort`='120' WHERE (`menu_id`='10078');
+INSERT INTO `yoshop_store_menu` VALUES ('10311', '10', '创建文章', '/content/article/create', '1', '', '', '10073', '105', '1751637320', '1751637320');
+INSERT INTO `yoshop_store_menu` VALUES ('10312', '10', '编辑文章', '/content/article/update', '1', '', '', '10073', '110', '1751637340', '1751637340');
+
+DELETE FROM `yoshop_store_menu_api` WHERE (`menu_id`='10075');
+DELETE FROM `yoshop_store_menu_api` WHERE (`menu_id`='10076');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11927', '10311', '11108', '1751637362');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11928', '10311', '11112', '1751637362');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11929', '10311', '11106', '1751637362');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11930', '10311', '11105', '1751637362');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11931', '10311', '11111', '1751637362');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11932', '10312', '11184', '1751637380');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11933', '10312', '11109', '1751637380');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11934', '10312', '11112', '1751637380');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11935', '10312', '11106', '1751637380');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11936', '10312', '11105', '1751637380');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11937', '10312', '11111', '1751637380');

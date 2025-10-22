@@ -329,7 +329,6 @@ class V3
     /**
      * 返回异步通知结果的输出内容
      * @return string
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function getNotifyResponse(): string
     {
