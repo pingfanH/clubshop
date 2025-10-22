@@ -13,6 +13,8 @@ declare (strict_types=1);
 namespace app\admin\model;
 
 use app\common\model\Store as StoreModel;
+use app\admin\model\store\User as StoreUserModel;
+use think\model\relation\HasOne;
 
 /**
  * 商家记录表模型
@@ -22,6 +24,17 @@ use app\common\model\Store as StoreModel;
 class Store extends StoreModel
 {
     /**
+     * 关联商家用户记录 (超级管理员)
+     * @return HasOne
+     */
+    public function superUser(): HasOne
+    {
+        $module = self::getCalledModule();
+        return $this->hasOne("app\\{$module}\\model\\store\\User")
+            ->where('is_super', '=', 1);
+    }
+
+    /**
      * 获取列表数据
      * @param bool $isRecycle
      * @return \think\Paginator
@@ -29,10 +42,36 @@ class Store extends StoreModel
      */
     public function getList(bool $isRecycle = false): \think\Paginator
     {
-        return $this->where('is_recycle', '=', (int)$isRecycle)
+        return $this->with(['superUser'])
+            ->where('is_recycle', '=', (int)$isRecycle)
             ->where('is_delete', '=', 0)
             ->order(['sort' => 'asc', 'create_time' => 'desc'])
             ->paginate(15);
+    }
+
+    /**
+     * 更新记录
+     * @param array $data
+     * @return bool|mixed
+     */
+    public function edit(array $data)
+    {
+        if (!empty($data['password']) && ($data['password'] !== $data['password_confirm'])) {
+            $this->error = '确认密码不正确';
+            return false;
+        }
+        if ($this['superUser']['user_name'] !== $data['user_name']
+            && StoreUserModel::checkExist($data['user_name'])) {
+            $this->error = '商家用户名已存在';
+            return false;
+        }
+        return $this->transaction(function () use ($data) {
+            // 更新商户记录
+            $this->save(['sort' => $data['sort']]);
+            // 更新商家用户信息
+            (new StoreUserModel)->edit((int)$this['store_id'], $data);
+            return true;
+        });
     }
 
     /**

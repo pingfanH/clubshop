@@ -88,6 +88,23 @@ class Store extends Controller
     }
 
     /**
+     * 修改商家账户
+     * @param int $storeId
+     * @return Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function edit(int $storeId): Json
+    {
+        $model = StoreModel::detail($storeId);
+        if (!$model->edit($this->postForm())) {
+            return $this->renderError($model->getError() ?: '操作失败');
+        }
+        return $this->renderSuccess('操作成功');
+    }
+
+    /**
      * 移出回收站
      * @param int $storeId
      * @return Json

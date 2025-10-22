@@ -21,8 +21,11 @@ use app\common\model\store\User as StoreUserModel;
  */
 class User extends StoreUserModel
 {
+    // 隐藏的字段
+    protected $hidden = ['password'];
+
     /**
-     * 新增商家用户记录
+     * 新增商家用户记录 (超级管理员)
      * @param int $storeId
      * @param array $data
      * @return bool|false
@@ -34,6 +37,22 @@ class User extends StoreUserModel
             'password' => encryption_hash($data['password']),
             'is_super' => 1,
             'store_id' => $storeId,
+        ]);
+    }
+
+    /**
+     * 更新商家用户记录 (超级管理员)
+     * @param int $storeId
+     * @param array $data
+     * @return bool|false
+     */
+    public function edit(int $storeId, array $data): bool
+    {
+        $form = ['user_name' => $data['user_name']];
+        !empty($data['password']) && $form['password'] = \encryption_hash($data['password']);
+        return static::updateBase($form, [
+            ['is_super', '=', 1],
+            ['store_id', '=', $storeId]
         ]);
     }
 
