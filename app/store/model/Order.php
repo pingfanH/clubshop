@@ -16,7 +16,7 @@ use app\common\model\Order as OrderModel;
 use app\common\service\Order as OrderService;
 use app\common\service\order\Refund as RefundService;
 use app\common\service\order\Printer as PrinterService;
-use app\common\service\order\PaySuccess as OrderPaySuccesService;
+use app\common\service\order\PaySuccess as OrderPaySuccessService;
 use app\common\enum\order\{
     DataType as DataTypeEnum,
     PayStatus as PayStatusEnum,
@@ -223,6 +223,16 @@ class Order extends OrderModel
      * @return bool
      */
     public function updateRemark(array $data): bool
+    {
+        return $this->save(['merchant_remark' => $data['content'] ?? '']);
+    }
+
+    /**
+     * 修改收货地址
+     * @param array $data
+     * @return bool
+     */
+    public function updateAddress(array $data): bool
     {
         return $this->save(['merchant_remark' => $data['content'] ?? '']);
     }

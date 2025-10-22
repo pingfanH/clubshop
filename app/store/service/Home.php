@@ -126,7 +126,7 @@ class Home extends BaseService
         for ($i = 0; $i < 7; $i++) {
             $date[] = date('Y-m-d', strtotime('-' . $i . ' days'));
         }
-        return array_reverse($date);
+        return \array_reverse($date);
     }
 
     /**
@@ -135,7 +135,7 @@ class Home extends BaseService
      */
     private function getGoodsTotal(): string
     {
-        return number_format($this->GoodsModel->getGoodsTotal());
+        return \number_format($this->GoodsModel->getGoodsTotal());
     }
 
     /**
@@ -146,7 +146,7 @@ class Home extends BaseService
      */
     private function getUserTotal(string $date = null, $isConsume = null): string
     {
-        return number_format($this->UserModel->getUserTotal(compact('date', 'isConsume')));
+        return \number_format($this->UserModel->getUserTotal(compact('date', 'isConsume')));
     }
 
     /**
@@ -192,9 +192,9 @@ class Home extends BaseService
      * @param string $day
      * @return string
      */
-    private function getPayOrderUserTotal(string $day)
+    private function getPayOrderUserTotal(string $day): string
     {
-        return number_format($this->OrderModel->getPayOrderUserTotal($day));
+        return \number_format($this->OrderModel->getPayOrderUserTotal($day));
     }
 
     /**
@@ -204,31 +204,31 @@ class Home extends BaseService
      */
     private function getPayOrderTotal(string $day = null): string
     {
-        return number_format($this->OrderModel->getPayOrderTotal($day, $day));
+        return \number_format($this->OrderModel->getPayOrderTotal($day, $day));
     }
 
     // 获取未发货订单数量
     private function getNotDeliveredOrderTotal(): string
     {
-        return number_format($this->OrderModel->getNotDeliveredOrderTotal());
+        return \number_format($this->OrderModel->getNotDeliveredOrderTotal());
     }
 
     // 获取未付款订单数量
     private function getNotPayOrderTotal(): string
     {
-        return number_format($this->OrderModel->getNotPayOrderTotal());
+        return \number_format($this->OrderModel->getNotPayOrderTotal());
     }
 
     // 获取已售罄的商品
     private function getSoldoutGoodsTotal(): string
     {
-        return number_format($this->GoodsModel->getSoldoutGoodsTotal());
+        return \number_format($this->GoodsModel->getSoldoutGoodsTotal());
     }
 
     // 获取待处理售后单数量
     private function getRefundTotal(): string
     {
         $model = new OrderRefundModel;
-        return number_format($model->getRefundTotal());
+        return \number_format($model->getRefundTotal());
     }
 }

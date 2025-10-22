@@ -35,7 +35,7 @@ class Address extends BaseModel
     protected $append = ['cascader', 'region', 'full_address'];
 
     /**
-     * 省市区ID集
+     * 获取器：省市区ID集
      * @param $value
      * @param $data
      * @return array
@@ -70,8 +70,8 @@ class Address extends BaseModel
      */
     public function getFullAddressAttr($value, $data): string
     {
-        $rgionNames = $this->getRegionNames($data);
-        return "{$rgionNames['province']}{$rgionNames['city']}{$rgionNames['region']}{$data['detail']}";
+        $regionNames = $this->getRegionNames($data);
+        return "{$regionNames['province']}{$regionNames['city']}{$regionNames['region']}{$data['detail']}";
     }
 
     /**
