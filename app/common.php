@@ -446,3 +446,14 @@ function getStoreId(): int
 {
     return 10001;
 }
+
+/**
+ * 验证字符串是否为域名
+ * @param string $domain
+ * @return bool
+ */
+function is_valid_domain(string $domain): bool
+{
+    $pattern = '/^([a-z0-9]+([a-z0-9-]*(?:[a-z0-9]+))?\.)?[a-z0-9]+([a-z0-9-]*(?:[a-z0-9]+))?(\.us|\.tv|\.org\.cn|\.org|\.net\.cn|\.net|\.mobi|\.me|\.la|\.info|\.hk|\.gov\.cn|\.edu|\.com\.cn|\.com|\.co\.jp|\.co|\.cn|\.cc|\.biz)$/i';
+    return !empty($domain) && strpos($domain, '--') === false && preg_match($pattern, $domain);
+}
