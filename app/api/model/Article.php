@@ -70,7 +70,7 @@ class Article extends ArticleModel
      */
     private static function setIncActualViews(int $articleId): void
     {
-        (new static)->setInc($articleId, 'actual_views', 1);
+        (new static)->myInc($articleId, 'actual_views', 1);
     }
 
     /**

@@ -214,7 +214,7 @@ class User extends UserModel
         // 更新记录
         $this->transaction(function () use ($storeUserName, $data, $diffMoney) {
             // 更新账户积分
-            $this->setInc($this['user_id'], 'points', $diffMoney);
+            $this->myInc($this['user_id'], 'points', $diffMoney);
             // 新增积分变动记录
             PointsLogModel::add([
                 'user_id' => $this['user_id'],
@@ -260,6 +260,6 @@ class User extends UserModel
      */
     public function setDecUserExpend(int $userId, float $expendMoney)
     {
-        return $this->setDec(['user_id' => $userId], 'expend_money', $expendMoney);
+        return $this->myDec(['user_id' => $userId], 'expend_money', $expendMoney);
     }
 }

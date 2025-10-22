@@ -161,6 +161,6 @@ class Coupon extends BaseModel
      */
     public static function setIncReceiveNum(int $couponId)
     {
-        return (new static)->setInc($couponId, 'receive_num', 1);
+        return (new static)->myInc($couponId, 'receive_num', 1);
     }
 }

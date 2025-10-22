@@ -203,7 +203,7 @@ abstract class BaseModel extends Model
      * @param float $step
      * @return mixed
      */
-    protected function setInc($where, string $field, float $step = 1)
+    protected function myInc($where, string $field, float $step = 1)
     {
         if (is_numeric($where)) {
             $where = [$this->getPk() => (int)$where];
@@ -218,7 +218,7 @@ abstract class BaseModel extends Model
      * @param float $step
      * @return mixed
      */
-    protected function setDec($where, string $field, float $step = 1)
+    protected function myDec($where, string $field, float $step = 1)
     {
         if (is_numeric($where)) {
             $where = [$this->getPk() => (int)$where];

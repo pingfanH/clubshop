@@ -107,7 +107,7 @@ class User extends BaseModel
      */
     public static function setIncUserExpend(int $userId, float $expendMoney)
     {
-        return (new static)->setInc($userId, 'expend_money', $expendMoney);
+        return (new static)->myInc($userId, 'expend_money', $expendMoney);
     }
 
     /**
@@ -118,7 +118,7 @@ class User extends BaseModel
      */
     public static function setIncBalance(int $userId, float $money)
     {
-        return (new static)->setInc($userId, 'balance', $money);
+        return (new static)->myInc($userId, 'balance', $money);
     }
 
     /**
@@ -129,7 +129,7 @@ class User extends BaseModel
      */
     public static function setDecBalance(int $userId, float $money)
     {
-        return (new static)->setDec([['user_id', '=', $userId]], 'balance', $money);
+        return (new static)->myDec([['user_id', '=', $userId]], 'balance', $money);
     }
 
     /**
@@ -166,7 +166,7 @@ class User extends BaseModel
      */
     public static function setIncPayMoney(int $userId, float $money)
     {
-        return (new static)->setInc($userId, 'pay_money', $money);
+        return (new static)->myInc($userId, 'pay_money', $money);
     }
 
     /**
@@ -190,7 +190,7 @@ class User extends BaseModel
     public function onBatchIncPoints(array $data): bool
     {
         foreach ($data as $userId => $value) {
-            $this->setInc($userId, 'points', $value);
+            $this->myInc($userId, 'points', $value);
         }
         return true;
     }
@@ -213,6 +213,6 @@ class User extends BaseModel
             'store_id' => $storeId ?: static::$storeId
         ]);
         // 更新用户可用积分
-        return (new static)->setInc($userId, 'points', $points);
+        return (new static)->myInc($userId, 'points', $points);
     }
 }
