@@ -40,7 +40,7 @@
         "topthink/think-worker": "^3.0",
         "topthink/think-filesystem": "^2.0",
         "topthink/think-queue": "^3.0",
-        "yiovo/tp6-cache": "^1.0",
+        "yiovo/tp6-cache": "1.0.1",
         "yiovo/tp6-captcha": "^1.1",
         "qiniu/php-sdk": "^7.2",
         "aliyuncs/oss-sdk-php": "^2.3",
