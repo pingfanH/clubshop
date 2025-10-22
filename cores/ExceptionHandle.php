@@ -70,10 +70,10 @@ class ExceptionHandle extends Handle
             return $this->output($extend);
         }
         // 系统运行的异常
-        $this->status = config('status.error');
+        $this->status = \config('status.error');
         $this->message = $e->getMessage() ?: '很抱歉，服务器内部错误';
         // 如果是debug模式, 输出调试信息
-        if (is_debug()) {
+        if (\is_debug()) {
             return $this->outputDebug($e);
         }
         // 将运行异常写入日志
@@ -88,6 +88,7 @@ class ExceptionHandle extends Handle
      */
     private function output(array $extend = []): Json
     {
+        $this->data = \array_merge(['isPrompt' => true], $this->data);
         $jsonData = ['message' => $this->message, 'status' => $this->status, 'data' => $this->data];
         return json(array_merge($jsonData, $extend));
     }
@@ -99,16 +100,15 @@ class ExceptionHandle extends Handle
      */
     private function outputDebug(Throwable $e): Json
     {
-        $debug = [
-            'name' => get_class($e),
+        return $this->output(['debug' => [
+            'name' => \get_class($e),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
             'code' => $this->getCode($e),
             'message' => $this->getMessage($e),
             'trace' => $e->getTrace(),
             'source' => $this->getSourceCode($e),
-        ];
-        return $this->output(['debug' => $debug]);
+        ]]);
     }
 
     /**
