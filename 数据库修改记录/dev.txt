@@ -2,3 +2,6 @@
 -- 用于记录开发阶段的数据库变更
 -- ----------------------------
 
+ALTER TABLE `yoshop_store`
+ADD COLUMN `remark` varchar(500) NOT NULL DEFAULT '' COMMENT '备注信息' AFTER `logo_image_id`;
+

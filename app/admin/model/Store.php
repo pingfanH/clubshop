@@ -67,7 +67,7 @@ class Store extends StoreModel
         }
         return $this->transaction(function () use ($data) {
             // 更新商户记录
-            $this->save(['sort' => $data['sort']]);
+            $this->save(['remark' => $data['remark'], 'sort' => $data['sort']]);
             // 更新商家用户信息
             (new StoreUserModel)->edit((int)$this['store_id'], $data);
             return true;
