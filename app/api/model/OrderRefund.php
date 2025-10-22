@@ -142,7 +142,11 @@ class OrderRefund extends OrderRefundModel
      */
     public function getRefundGoods(int $orderGoodsId)
     {
-        $goods = OrderGoodsModel::detail($orderGoodsId);
+        $userId = UserService::getCurrentLoginUserId();
+        $goods = OrderGoodsModel::detail(['order_goods_id' => $orderGoodsId, 'user_id' => $userId]);
+        if (empty($goods)) {
+            throwError('未找到订单商品信息');
+        }
         if (isset($goods['refund']) && !empty($goods['refund'])) {
             throwError('当前商品已申请售后');
         }
