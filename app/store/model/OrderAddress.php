@@ -21,5 +21,22 @@ use app\common\model\OrderAddress as OrderAddressModel;
  */
 class OrderAddress extends OrderAddressModel
 {
-
+    /**
+     * 修改订单收货地址
+     * @param int $orderAddressId
+     * @param array $data
+     * @return bool
+     */
+    public static function updateAddress(int $orderAddressId, array $data): bool
+    {
+        static::updateBase([
+            'name' => $data['name'],
+            'phone' => $data['phone'],
+            'province_id' => $data['cascader'][0],
+            'city_id' => $data['cascader'][1],
+            'region_id' => $data['cascader'][2],
+            'detail' => $data['detail'],
+        ], $orderAddressId);
+        return true;    // todo
+    }
 }

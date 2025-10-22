@@ -234,7 +234,7 @@ class Order extends OrderModel
      */
     public function updateAddress(array $data): bool
     {
-        return $this->save(['merchant_remark' => $data['content'] ?? '']);
+        return OrderAddress::updateAddress($this['address']['order_address_id'], $data);
     }
 
     /**

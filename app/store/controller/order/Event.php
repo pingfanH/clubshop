@@ -13,6 +13,7 @@ declare (strict_types=1);
 namespace app\store\controller\order;
 
 use think\response\Json;
+use think\db\exception\DbException;
 use app\store\controller\Controller;
 use app\store\model\Order as OrderModel;
 
@@ -30,7 +31,6 @@ class Event extends Controller
      */
     public function updatePrice(int $orderId): Json
     {
-        // 订单详情
         $model = OrderModel::detail($orderId);
         if ($model->updatePrice($this->postForm())) {
             return $this->renderSuccess('操作成功');
@@ -45,9 +45,22 @@ class Event extends Controller
      */
     public function updateRemark(int $orderId): Json
     {
-        // 订单详情
         $model = OrderModel::detail($orderId);
         if ($model->updateRemark($this->postForm())) {
+            return $this->renderSuccess('操作成功');
+        }
+        return $this->renderError($model->getError() ?: '操作失败');
+    }
+
+    /**
+     * 修改收货地址
+     * @param int $orderId
+     * @return Json
+     */
+    public function updateAddress(int $orderId): Json
+    {
+        $model = OrderModel::detail($orderId);
+        if ($model->updateAddress($this->postForm())) {
             return $this->renderSuccess('操作成功');
         }
         return $this->renderError($model->getError() ?: '操作失败');
@@ -57,11 +70,13 @@ class Event extends Controller
      * 小票打印
      * @param int $orderId
      * @return Json
+     * @throws DbException
      * @throws \cores\exception\BaseException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function printer(int $orderId): Json
     {
-        // 订单详情
         $model = OrderModel::detail($orderId);
         if ($model->printer($this->postForm())) {
             return $this->renderSuccess('操作成功');
@@ -76,7 +91,6 @@ class Event extends Controller
      */
     public function confirmCancel($orderId): Json
     {
-        // 订单详情
         $model = OrderModel::detail($orderId);
         if ($model->confirmCancel($this->postForm())) {
             return $this->renderSuccess('操作成功');
@@ -91,9 +105,7 @@ class Event extends Controller
      */
     public function delete(int $orderId): Json
     {
-        // 订单详情
         $model = OrderModel::detail($orderId);
-        // 确认删除
         if ($model->setDelete()) {
             return $this->renderSuccess('删除成功');
         }

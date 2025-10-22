@@ -34,7 +34,18 @@ class OrderAddress extends BaseModel
      * 追加字段
      * @var array
      */
-    protected $append = ['region'];
+    protected $append = ['cascader', 'region'];
+
+    /**
+     * 获取器：省市区ID集
+     * @param $value
+     * @param $data
+     * @return array
+     */
+    public function getCascaderAttr($value, $data): array
+    {
+        return [$data['province_id'], $data['city_id'], $data['region_id']];
+    }
 
     /**
      * 获取器：地区名称
