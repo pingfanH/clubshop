@@ -32,8 +32,7 @@ class Delivery extends DeliveryModel
     {
         // 检索查询条件
         $filter = $this->getQueryFilter($param);
-        return $this
-            ->with(['orderData' => ['user', 'address'], 'goods.goods.image', 'express'])
+        return $this->with(['orderData' => ['user', 'address'], 'goods.goods.image', 'express'])
             ->alias('delivery')
             ->field($this->getAliasFields('delivery', ['eorder_html']))
             ->join('order', 'order.order_id = delivery.order_id')
@@ -51,9 +50,10 @@ class Delivery extends DeliveryModel
     {
         // 默认参数
         $params = $this->setQueryDefaultValue($param, [
-            'searchType' => '',     // 关键词类型 (10订单号)
-            'searchValue' => '',    // 关键词内容
-            'betweenTime' => [],    // 起止时间
+            'searchType' => '',         // 关键词类型 (10订单号)
+            'searchValue' => '',        // 关键词内容
+            'deliveryMethod' => -1,     // 发货方式 DeliveryMethodEnum
+            'betweenTime' => [],        // 起止时间
         ]);
         // 检索查询条件
         $filter = [];
@@ -62,7 +62,11 @@ class Delivery extends DeliveryModel
             $searchWhere = [
                 10 => ['order.order_no', 'like', "%{$params['searchValue']}%"]
             ];
-            array_key_exists($params['searchType'], $searchWhere) && $filter[] = $searchWhere[$params['searchType']];
+            \array_key_exists($params['searchType'], $searchWhere) && $filter[] = $searchWhere[$params['searchType']];
+        }
+        // 发货时间
+        if ($params['deliveryMethod'] > -1) {
+            $filter[] = ['delivery_method', '=', (int)$params['deliveryMethod']];
         }
         // 起止时间
         if (!empty($params['betweenTime'])) {
