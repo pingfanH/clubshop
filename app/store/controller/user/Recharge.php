@@ -24,7 +24,7 @@ use app\store\model\recharge\Order as OrderModel;
 class Recharge extends Controller
 {
     /**
-     * 充值记录
+     * 充值订单
      * @return Json
      */
     public function order(): Json

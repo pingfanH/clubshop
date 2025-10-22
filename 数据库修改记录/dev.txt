@@ -27,3 +27,6 @@ INSERT INTO `yoshop_store_menu_api` VALUES ('11934', '10312', '11112', '17516373
 INSERT INTO `yoshop_store_menu_api` VALUES ('11935', '10312', '11106', '1751637380');
 INSERT INTO `yoshop_store_menu_api` VALUES ('11936', '10312', '11105', '1751637380');
 INSERT INTO `yoshop_store_menu_api` VALUES ('11937', '10312', '11111', '1751637380');
+
+UPDATE `yoshop_store_menu` SET `name`='充值订单' WHERE (`menu_id`='10070');
+UPDATE `yoshop_store_api` SET `name`='充值订单' WHERE (`api_id`='11103');
