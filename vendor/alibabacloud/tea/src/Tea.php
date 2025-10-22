@@ -173,7 +173,10 @@ class Tea
     public static function allowRetry(array $runtime, $retryTimes, $now)
     {
         unset($now);
-        if (empty($runtime) || !isset($runtime['maxAttempts'])) {
+        if (!isset($retryTimes) || null === $retryTimes || !\is_numeric($retryTimes)) {
+            return false;
+        }
+        if ($retryTimes > 0 && (empty($runtime) || !isset($runtime['retryable']) || !$runtime['retryable'] || !isset($runtime['maxAttempts']))) {
             return false;
         }
         $maxAttempts = $runtime['maxAttempts'];
@@ -269,6 +272,9 @@ class Tea
         }
         if (isset($config['noProxy']) && !empty($config['noProxy'])) {
             $options->set('proxy.no', $config['noProxy']);
+        }
+        if (isset($config['ignoreSSL']) && !empty($config['ignoreSSL'])) {
+            $options->set('verify',!((bool)$config['ignoreSSL']));
         }
         // readTimeout&connectTimeout unit is millisecond
         $read_timeout = isset($config['readTimeout']) && !empty($config['readTimeout']) ? (int) $config['readTimeout'] : 0;
