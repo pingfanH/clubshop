@@ -4612,6 +4612,8 @@ CREATE TABLE `yoshop_store` (
   `store_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商城名称',
   `describe` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商城简介',
   `logo_image_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商城logo文件ID',
+  `remark` varchar(500) NOT NULL DEFAULT '' COMMENT '备注信息',
+  `custom_domain` varchar(100) NOT NULL DEFAULT '' COMMENT '自定义H5域名',
   `sort` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '排序(数字越小越靠前)',
   `is_recycle` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否回收',
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除',
@@ -4620,7 +4622,7 @@ CREATE TABLE `yoshop_store` (
   PRIMARY KEY (`store_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10001 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='商家(商户)记录表';
 
-INSERT INTO `yoshop_store` VALUES ('10001', '萤火商城2.0', '感谢您选择萤火商城，希望我们的努力能为您提供一款适用于企业级电商零售的利器，萤火商城官方网站为 https://www.yiovo.com', '0', '100', '0', '0', '1614556800', '1614556800');
+INSERT INTO `yoshop_store` VALUES ('10001', '萤火商城2.0', '感谢您选择萤火商城，希望我们的努力能为您提供一款适用于企业级电商零售的利器，萤火商城官方网站为 https://www.yiovo.com', '0', '', '', '100', '0', '0', '1614556800', '1614556800');
 
 DROP TABLE IF EXISTS `yoshop_store_address`;
 CREATE TABLE `yoshop_store_address` (
@@ -4746,7 +4748,7 @@ INSERT INTO `yoshop_store_api` VALUES ('11099', '新增会员等级', '/user.gra
 INSERT INTO `yoshop_store_api` VALUES ('11100', '编辑会员等级', '/user.grade/edit', '11091', '100', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_api` VALUES ('11101', '删除会员等级', '/user.grade/delete', '11091', '100', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_api` VALUES ('11102', '余额记录', '-', '11089', '110', '1614556800', '1614556800');
-INSERT INTO `yoshop_store_api` VALUES ('11103', '充值记录', '/user.recharge/order', '11102', '100', '1614556800', '1614556800');
+INSERT INTO `yoshop_store_api` VALUES ('11103', '充值订单', '/user.recharge/order', '11102', '100', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_api` VALUES ('11104', '余额明细', '/user.balance/log', '11102', '100', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_api` VALUES ('11105', '内容管理', '-', '0', '145', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_api` VALUES ('11106', '文章管理', '-', '11105', '100', '1614556800', '1614556800');
@@ -4934,15 +4936,13 @@ INSERT INTO `yoshop_store_menu` VALUES ('10066', '20', '新增', '', '1', '', 'a
 INSERT INTO `yoshop_store_menu` VALUES ('10067', '20', '编辑', '', '1', '', 'edit', '10065', '105', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10068', '20', '删除', '', '1', '', 'delete', '10065', '110', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10069', '10', '余额记录', '/user/balance', '0', 'user-balance', '', '10060', '115', '1614556800', '1614556800');
-INSERT INTO `yoshop_store_menu` VALUES ('10070', '10', '充值记录', '/user/recharge/index', '1', '', '', '10069', '100', '1614556800', '1614556800');
+INSERT INTO `yoshop_store_menu` VALUES ('10070', '10', '充值订单', '/user/recharge/index', '1', '', '', '10069', '100', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10071', '10', '余额明细', '/user/balance/index', '1', '', '', '10069', '105', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10072', '10', '内容管理', '/content', '0', '', '', '0', '130', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10073', '10', '文章管理', '/content/article', '0', 'content-article', '', '10072', '100', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10074', '10', '文章列表', '/content/article/index', '1', '', '', '10073', '100', '1614556800', '1614556800');
-INSERT INTO `yoshop_store_menu` VALUES ('10075', '20', '新增', '', '1', '', 'add', '10074', '100', '1614556800', '1614556800');
-INSERT INTO `yoshop_store_menu` VALUES ('10076', '20', '编辑', '', '1', '', 'edit', '10074', '105', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10077', '20', '删除', '', '1', '', 'delete', '10074', '110', '1614556800', '1614556800');
-INSERT INTO `yoshop_store_menu` VALUES ('10078', '10', '文章分类', '/content/article/category/index', '1', '', '', '10073', '100', '1614556800', '1614556800');
+INSERT INTO `yoshop_store_menu` VALUES ('10078', '10', '文章分类', '/content/article/category/index', '1', '', '', '10073', '120', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10079', '20', '新增', '', '1', '', 'add', '10078', '100', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10080', '20', '编辑', '', '1', '', 'edit', '10078', '105', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10081', '20', '删除', '', '1', '', 'delete', '10078', '110', '1614556800', '1614556800');
@@ -5029,6 +5029,8 @@ INSERT INTO `yoshop_store_menu` VALUES ('10263', '20', '新增', '', '1', '', 'a
 INSERT INTO `yoshop_store_menu` VALUES ('10264', '20', '编辑', '', '1', '', 'edit', '10262', '105', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10265', '20', '删除', '', '1', '', 'delete', '10262', '110', '1614556800', '1614556800');
 INSERT INTO `yoshop_store_menu` VALUES ('10266', '10', '打印设置', '/setting/printer/setting', '1', '', '', '10261', '105', '1614556800', '1614556800');
+INSERT INTO `yoshop_store_menu` VALUES ('10311', '10', '创建文章', '/content/article/create', '1', '', '', '10073', '105', '1751637320', '1751637320');
+INSERT INTO `yoshop_store_menu` VALUES ('10312', '10', '编辑文章', '/content/article/update', '1', '', '', '10073', '110', '1751637340', '1751637340');
 
 DROP TABLE IF EXISTS `yoshop_store_menu_api`;
 CREATE TABLE `yoshop_store_menu_api` (
@@ -6180,6 +6182,19 @@ INSERT INTO `yoshop_store_menu_api` VALUES ('11601', '10055', '11252', '16145568
 INSERT INTO `yoshop_store_menu_api` VALUES ('11602', '10055', '11020', '1614556800');
 INSERT INTO `yoshop_store_menu_api` VALUES ('11603', '10055', '11259', '1614556800');
 INSERT INTO `yoshop_store_menu_api` VALUES ('11604', '10055', '11318', '1614556800');
+DELETE FROM `yoshop_store_menu_api` WHERE (`menu_id`='10075');
+DELETE FROM `yoshop_store_menu_api` WHERE (`menu_id`='10076');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11927', '10311', '11108', '1751637362');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11928', '10311', '11112', '1751637362');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11929', '10311', '11106', '1751637362');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11930', '10311', '11105', '1751637362');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11931', '10311', '11111', '1751637362');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11932', '10312', '11184', '1751637380');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11933', '10312', '11109', '1751637380');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11934', '10312', '11112', '1751637380');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11935', '10312', '11106', '1751637380');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11936', '10312', '11105', '1751637380');
+INSERT INTO `yoshop_store_menu_api` VALUES ('11937', '10312', '11111', '1751637380');
 
 DROP TABLE IF EXISTS `yoshop_store_role`;
 CREATE TABLE `yoshop_store_role` (
