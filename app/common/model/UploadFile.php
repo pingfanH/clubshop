@@ -84,7 +84,7 @@ class UploadFile extends BaseModel
      */
     public static function detail(int $fileId)
     {
-        return self::get($fileId);
+        return static::get($fileId);
     }
 
     /**
@@ -93,7 +93,7 @@ class UploadFile extends BaseModel
      * @param int|null $storeId
      * @return array
      */
-    public static function filteFileIds(array $fileIds, int $storeId = null): array
+    public static function filterFileIds(array $fileIds, int $storeId = null): array
     {
         return (new static)->where('file_id', 'in', $fileIds)
             ->where('store_id', '=', $storeId ?: self::$storeId)

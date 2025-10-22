@@ -83,7 +83,7 @@ class UploadFile extends UploadFileModel
     public function setDelete(array $fileIds): bool
     {
         // 验证文件数量
-        if (count($fileIds) > 15) {
+        if (\count($fileIds) > 15) {
             $this->error = '一次性最多删除15个文件';
             return false;
         }
@@ -91,7 +91,7 @@ class UploadFile extends UploadFileModel
         $config = SettingModel::getItem(SettingEnum::STORAGE);
         foreach ($fileIds as $fileId) {
             // 获取文件详情
-            $fileInfo = static::detail($fileId);
+            $fileInfo = static::detail((int)$fileId);
             if ($fileInfo['storage'] != 'external') {
                 // 实例化存储驱动
                 $storage = new StorageDriver($config, $fileInfo['storage']);
