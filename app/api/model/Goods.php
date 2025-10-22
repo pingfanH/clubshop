@@ -12,12 +12,12 @@ declare (strict_types=1);
 
 namespace app\api\model;
 
-use app\api\service\Goods as GoodsService;
-use app\api\service\user\Grade as UserGradeService;
 use app\api\model\GoodsSku as GoodsSkuModel;
 use app\api\model\GoodsSpecRel as GoodsSpecRelModel;
-use app\common\model\Goods as GoodsModel;
+use app\api\service\Goods as GoodsService;
+use app\api\service\user\Grade as UserGradeService;
 use app\common\enum\goods\Status as GoodsStatusEnum;
+use app\common\model\Goods as GoodsModel;
 use cores\exception\BaseException;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
