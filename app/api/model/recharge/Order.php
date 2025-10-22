@@ -35,7 +35,7 @@ class Order extends OrderModel
      * @var array
      */
     protected $hidden = [
-        'transaction_id',
+        'trade_id',
         'store_id',
         'create_time',
         'update_time',

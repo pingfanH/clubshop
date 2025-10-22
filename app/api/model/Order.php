@@ -41,7 +41,7 @@ class Order extends OrderModel
      */
     protected $hidden = [
         'merchant_remark',
-        'transaction_id',
+        'trade_id',
         'order_source_data',
         'is_settled',
         'is_delete',
