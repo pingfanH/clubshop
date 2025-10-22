@@ -270,10 +270,8 @@ class Goods extends GoodsModel
         $goods['goods_price_min'] = UserGradeService::getDiscountPrice($goods['goods_price_min'], $discountRatio);
         $goods['goods_price_max'] = UserGradeService::getDiscountPrice($goods['goods_price_max'], $discountRatio);
         // 会员折扣价: 商品sku列表
-        if ($goods->getRelation('skuList')) {
-            foreach ($goods['skuList'] as &$skuItem) {
-                $skuItem['goods_price'] = UserGradeService::getDiscountPrice($skuItem['goods_price'], $discountRatio);
-            }
+        foreach ($goods['skuList'] as &$skuItem) {
+            $skuItem['goods_price'] = UserGradeService::getDiscountPrice($skuItem['goods_price'], $discountRatio);
         }
         // 会员折扣价: 已选择的商品sku（用于购物车）
         if ($goods->getAttr('skuInfo')) {
