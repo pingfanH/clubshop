@@ -230,7 +230,7 @@ class GoodsSku extends BaseModel
      */
     public static function getGoodsPrices(array $skuList): array
     {
-        $goodsPriceArr = helper::getArrayColumn($skuList, 'goods_price');
+        $goodsPriceArr = \array_filter(helper::getArrayColumn($skuList, 'goods_price'));
         return empty($goodsPriceArr) ? [0, 0] : [min($goodsPriceArr), max($goodsPriceArr)];
     }
 
@@ -241,7 +241,7 @@ class GoodsSku extends BaseModel
      */
     public static function getLinePrices(array $skuList): array
     {
-        $linePriceArr = helper::getArrayColumn($skuList, 'line_price');
+        $linePriceArr = \array_filter(helper::getArrayColumn($skuList, 'line_price'));
         return empty($linePriceArr) ? [0, 0] : [min($linePriceArr), max($linePriceArr)];
     }
 }

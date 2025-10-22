@@ -385,6 +385,27 @@ function filter_emoji($text)
 }
 
 /**
+ * 过滤int类型的数组
+ * @param array $data
+ * @return array
+ */
+function filter_array_int(array $data): array
+{
+    return array_filter(array_map(fn($val) => (int)$val, $data));
+}
+
+/**
+ * 分割int类型的数组
+ * @param array $data
+ * @param string $separator
+ * @return string
+ */
+function implode_int(array $data, string $separator = ','): string
+{
+    return implode($separator, filter_array_int($data));
+}
+
+/**
  * 根据指定长度截取字符串
  * @param $str
  * @param int $length

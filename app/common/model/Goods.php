@@ -309,7 +309,7 @@ class Goods extends BaseModel
             ->with(['images.file'])
             ->where($filter)
             ->where('is_delete', '=', 0)
-            ->orderRaw('field(goods_id, ' . implode(',', $goodsIds) . ')')
+            ->orderRaw('field(goods_id, ' . \implode_int($goodsIds) . ')')
             ->select();
         // 整理列表数据并返回
         return $this->setGoodsListData($data);

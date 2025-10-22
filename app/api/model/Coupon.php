@@ -62,7 +62,7 @@ class Coupon extends CouponModel
         // 指定优惠券ID集
         if (!empty($couponIds)) {
             $query->where('coupon_id', 'in', $couponIds);
-            $query->orderRaw('field(coupon_id, ' . implode(',', $couponIds) . ')');
+            $query->orderRaw('field(coupon_id, ' . \implode_int($couponIds) . ')');
         } else {
             $limit > 0 && $query->limit($limit);
             $query->order(['sort', 'create_time' => 'desc']);

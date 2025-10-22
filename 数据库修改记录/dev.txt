@@ -5,6 +5,9 @@
 ALTER TABLE `yoshop_store`
 ADD COLUMN `remark` varchar(500) NOT NULL DEFAULT '' COMMENT '备注信息' AFTER `logo_image_id`;
 
+ALTER TABLE `yoshop_store`
+ADD COLUMN `custom_domain` varchar(100) NOT NULL DEFAULT '' COMMENT '自定义H5域名' AFTER `remark`;
+
 DELETE FROM `yoshop_store_menu` WHERE (`menu_id`='10075');
 DELETE FROM `yoshop_store_menu` WHERE (`menu_id`='10076');
 UPDATE `yoshop_store_menu` SET `sort`='120' WHERE (`menu_id`='10078');
