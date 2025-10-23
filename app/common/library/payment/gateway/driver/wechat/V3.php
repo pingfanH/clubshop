@@ -268,10 +268,10 @@ class V3
     }
 
     /**
-     * 商家转账到零钱API
+     * 商家转账到零钱API (旧接口)
      * @param string $outTradeNo 交易订单号
      * @param string $totalFee 实际付款金额
-     * @param array $extra 附加的数据 (需要携带openid、desc)
+     * @param array $extra 附加的数据 (需要携带openid、remark)
      * @return bool
      * @throws BaseException
      */
@@ -281,15 +281,15 @@ class V3
         $params = [
             'appid' => $this->config['app_id'],
             'out_batch_no' => $outTradeNo,
-            'batch_name' => $extra['desc'],
-            'batch_remark' => $extra['desc'],
+            'batch_name' => $extra['remark'],
+            'batch_remark' => $extra['remark'],
             'total_amount' => (int)helper::bcmul($totalFee, 100), // 转账金额，单位：分
             'total_num' => 1,   // 转账总笔数
             'transfer_detail_list' => [
                 [
-                    'out_detail_no' => time() . uniqid(),
+                    'out_detail_no' => \time() . \uniqid(),
                     'transfer_amount' => (int)helper::bcmul($totalFee, 100),
-                    'transfer_remark' => $extra['desc'],
+                    'transfer_remark' => $extra['remark'],
                     'openid' => $extra['openid'],
                 ]
             ]
@@ -321,8 +321,10 @@ class V3
     public function getNotifyParams(): array
     {
         return [
-            // 第三方交易流水号
-            'tradeNo' => $this->notifyParams['transaction_id']
+            // 微信支付: 交易订单号
+            'outTradeNo' => $this->notifyParams['out_trade_no'] ?? '',
+            // 微信支付: 第三方交易流水号
+            'tradeNo' => $this->notifyParams['transaction_id'] ?? '',
         ];
     }
 
@@ -530,7 +532,7 @@ class V3
      */
     private function notifyUrl(): string
     {
-        // 例如：https://www.xxxx.com/wxpayV3.php
+        // 例如：https://www.xxxx.com/notice/wxpayV3.php
         return base_url() . 'notice/wxpayV3.php';
     }
 
@@ -609,6 +611,7 @@ class V3
             if (!empty($body)) {
                 $result = helper::jsonDecode($body);
                 isset($result['message']) && $message = $result['message'];
+                Log::append('Wechat-Throwable', ['title' => 'API异常信息', 'body' => $body]);
             }
         }
         return $message;
@@ -621,8 +624,8 @@ class V3
      */
     private function getUnifyApiUrl(): string
     {
-        $partnerNodo = $this->isProvider() ? 'partner/' : '';
-        return "v3/pay/{$partnerNodo}transactions/" . $this->tradeType();
+        $partnerNode = $this->isProvider() ? 'partner/' : '';
+        return "v3/pay/{$partnerNode}transactions/" . $this->tradeType();
     }
 
     /**
@@ -632,8 +635,8 @@ class V3
      */
     private function getTradeApiUrl(string $outTradeNo): string
     {
-        $partnerNodo = $this->isProvider() ? 'partner/' : '';
-        return "v3/pay/{$partnerNodo}transactions/out-trade-no/{$outTradeNo}";
+        $partnerNode = $this->isProvider() ? 'partner/' : '';
+        return "v3/pay/{$partnerNode}transactions/out-trade-no/{$outTradeNo}";
     }
 
     /**
@@ -646,11 +649,12 @@ class V3
     }
 
     /**
-     * 商家转账到零钱API的Url
+     * 商家转账到零钱API的Url (旧)
      * @return string
      */
     private function getTransfersUrl(): string
     {
         return 'v3/transfer/batches';
     }
+
 }
