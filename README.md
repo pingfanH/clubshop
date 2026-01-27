@@ -98,7 +98,7 @@ php think timer start
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2017-2024 By 萤火科技 (https://www.yiovo.com) All rights reserved。
+版权所有Copyright © 2017-2026 By 萤火科技 (https://www.yiovo.com) All rights reserved。
 
 
 
