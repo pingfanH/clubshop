@@ -47,6 +47,7 @@ class AllowCrossDomain
             'Access-Token',
             'storeId',
             'platform',
+            'domain',
         ];
     }
 
@@ -62,8 +63,6 @@ class AllowCrossDomain
         ], $this->getCustomHeader());
 
         return [
-            // 允许所有域名访问
-            'Access-Control-Allow-Origin' => '*',
             // 允许cookie跨域访问
             'Access-Control-Allow-Credentials' => 'true',
             // 预检请求的有效期
@@ -91,8 +90,8 @@ class AllowCrossDomain
 
             if ($origin && ('' == $this->cookieDomain || strpos($origin, $this->cookieDomain))) {
                 $header['Access-Control-Allow-Origin'] = $origin;
-            } else {
-                $header['Access-Control-Allow-Origin'] = '*';
+                // 缓存按 Origin 区分，避免跨域缓存污染
+                $header['Vary'] = 'Origin';
             }
         }
         return $next($request)->header($header);

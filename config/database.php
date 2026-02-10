@@ -7,9 +7,9 @@ $config = [
     // 数据库名
     'database' => 'yoshop_pro2',
     // 用户名
-    'username' => 'root',
+    'username' => 'yoshop_pro2',
     // 密码
-    'password' => 'root',
+    'password' => 'd4JMFkRsmMJRnJt4',
     // 端口号
     'hostport' => '3306',
     // 数据库编码默认采用utf8
