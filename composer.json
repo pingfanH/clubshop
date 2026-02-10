@@ -73,7 +73,10 @@
         "optimize-autoloader": true,
         "allow-plugins": {
             "easywechat-composer/easywechat-composer": false
-        }
+        },
+        "platform": {
+    "php": "7.4.33"
+  }
     },
     "scripts": {
         "post-autoload-dump": [
