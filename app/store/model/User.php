@@ -94,6 +94,33 @@ class User extends UserModel
     }
 
     /**
+     * 新增用户
+     * @param array $data
+     * @return bool
+     */
+    public function add(array $data): bool
+    {
+        // 判断手机号是否已存在
+        if (!empty($data['mobile']) && static::detail(['mobile' => $data['mobile']])) {
+            $this->error = '手机号已存在';
+            return false;
+        }
+        
+        $add = [
+            'mobile' => $data['mobile'] ?? '',
+            'nick_name' => $data['nick_name'] ?? (!empty($data['mobile']) ? \hide_mobile($data['mobile']) : '新用户'),
+            'platform' => 'H5',
+            'store_id' => $data['store_id'],
+            'create_time' => time(),
+            'last_login_time' => time(),
+        ];
+        
+        // 如果有密码字段，可以在这里处理，但当前系统似乎是无密码或短信验证
+        
+        return $this->save($add);
+    }
+
+    /**
      * 获取查询条件
      * @param array $param
      * @return array

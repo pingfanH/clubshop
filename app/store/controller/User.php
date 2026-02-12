@@ -36,6 +36,21 @@ class User extends Controller
     }
 
     /**
+     * 新增用户
+     * @return Json
+     */
+    public function add(): Json
+    {
+        $model = new UserModel;
+        $data = $this->postForm();
+        $data['store_id'] = $this->storeId;
+        if ($model->add($data)) {
+            return $this->renderSuccess('添加成功');
+        }
+        return $this->renderError($model->getError() ?: '添加失败');
+    }
+
+    /**
      * 删除用户
      * @param int $userId
      * @return Json
