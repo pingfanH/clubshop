@@ -4,6 +4,6 @@
 .env
 /vendor/
 /runtime/
-/.DS_Store
+.DS_Store
 **/.DS_Store
 .user.ini
