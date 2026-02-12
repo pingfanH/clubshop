@@ -29,4 +29,13 @@ class UserRole extends BaseModel
 
     protected $updateTime = false;
 
+    /**
+     * 获取指定用户的角色ID列表
+     * @param int $userId
+     * @return array
+     */
+    public static function getRoleIdsByUserId(int $userId): array
+    {
+        return (new static)->where('store_user_id', '=', $userId)->column('role_id');
+    }
 }
