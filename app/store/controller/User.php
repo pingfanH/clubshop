@@ -110,4 +110,19 @@ class User extends Controller
         }
         return $this->renderError($model->getError() ?: '操作失败');
     }
+
+    /**
+     * 设置/取消商家
+     * @param int $userId
+     * @param int $isMerchant
+     * @return Json
+     */
+    public function setMerchant(int $userId, int $isMerchant): Json
+    {
+        $model = UserModel::detail($userId);
+        if ($model->setMerchant($isMerchant, $this->storeId)) {
+            return $this->renderSuccess('操作成功');
+        }
+        return $this->renderError($model->getError() ?: '操作失败');
+    }
 }

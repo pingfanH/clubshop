@@ -86,7 +86,7 @@ class User extends UserModel
         // 检索查询条件
         $filter = $this->getFilter($param);
         // 获取用户列表
-        return $this->with(['avatar', 'grade'])
+        return $this->with(['avatar', 'grade', 'merchant'])
             ->where($filter)
             ->where('is_delete', '=', '0')
             ->order(['create_time' => 'desc'])
@@ -288,5 +288,35 @@ class User extends UserModel
     public function setDecUserExpend(int $userId, float $expendMoney)
     {
         return $this->myDec(['user_id' => $userId], 'expend_money', $expendMoney);
+    }
+
+    /**
+     * 设置/取消商家
+     * @param int $isMerchant
+     * @param int $storeId
+     * @return bool
+     */
+    public function setMerchant(int $isMerchant, int $storeId): bool
+    {
+        return $this->transaction(function () use ($isMerchant, $storeId) {
+            // 查询是否已经是商家
+            $merchant = \app\common\model\Merchant::where('user_id', $this['user_id'])->find();
+
+            if ($isMerchant == 1) {
+                if (!$merchant) {
+                    $model = new \app\common\model\Merchant;
+                    return (bool)$model->save([
+                        'user_id' => $this['user_id'],
+                        'name' => $this['nick_name'] . '的小店',
+                        'store_id' => $storeId
+                    ]);
+                }
+            } else {
+                if ($merchant) {
+                    return (bool)$merchant->delete();
+                }
+            }
+            return true;
+        });
     }
 }
