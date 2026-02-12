@@ -148,6 +148,15 @@ class Goods extends BaseModel
     }
 
     /**
+     * 关联商户表
+     * @return BelongsTo
+     */
+    public function merchant(): BelongsTo
+    {
+        return $this->belongsTo('Merchant', 'merchant_id', 'merchant_id');
+    }
+
+    /**
      * 关联运费模板表
      * @return BelongsTo
      */

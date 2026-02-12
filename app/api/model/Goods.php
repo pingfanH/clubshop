@@ -120,8 +120,8 @@ class Goods extends GoodsModel
      */
     public function getDetails(int $goodsId, bool $verifyStatus = true)
     {
-        // 关联查询(商品图片、sku列表)
-        $with = ['images.file', 'skuList.image', 'video', 'videoCover'];
+        // 关联查询(商品图片、sku列表、商家信息)
+        $with = ['images.file', 'skuList.image', 'video', 'videoCover', 'merchant.logo'];
         // 获取商品记录
         $goodsInfo = $this->getGoodsMain($goodsId, $with, $verifyStatus);
         // 商品规格列表

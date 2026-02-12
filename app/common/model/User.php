@@ -73,6 +73,15 @@ class User extends BaseModel
     }
 
     /**
+     * 关联商家表
+     * @return HasOne
+     */
+    public function merchant(): HasOne
+    {
+        return $this->hasOne('Merchant', 'user_id', 'user_id');
+    }
+
+    /**
      * 获取器：显示性别
      * @param $value
      * @return string

@@ -63,10 +63,14 @@ class User extends UserModel
         // 用户的ID
         $userId = (int)Cache::get($token)['user']['user_id'];
         // 用户基本信息
-        $userInfo = self::detail($userId);
+        $userInfo = self::detail($userId, ['merchant']);
         if (empty($userInfo) || $userInfo['is_delete']) {
             throwError('很抱歉，用户信息不存在或已删除', config('status.not_logged'));
         }
+        // 设置商家身份
+        $userInfo['is_merchant'] = !empty($userInfo['merchant']);
+        $userInfo['merchant_id'] = $userInfo['merchant'] ? $userInfo['merchant']['merchant_id'] : 0;
+        
         // 获取用户关联的第三方用户信息(当前客户端)
         try {
             $userInfo['currentOauth'] = UserOauthModel::getOauth($userId, getPlatform());
