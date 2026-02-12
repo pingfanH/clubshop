@@ -7,5 +7,7 @@ return [
     'commands' => [
         // 定时任务
         'timer' => \app\timer\command\Timer::class,
+        // 更新数据库结构
+        'update_schema' => \app\command\UpdateSchema::class,
     ],
 ];

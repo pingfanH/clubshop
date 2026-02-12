@@ -96,7 +96,10 @@ class Goods extends GoodsModel
     public function getList(array $param = [], int $listRows = 15)
     {
         // 整理查询参数
-        $params = \array_merge($param, ['status' => GoodsStatusEnum::ON_SALE]);
+        $params = \array_merge($param, [
+            'status' => GoodsStatusEnum::ON_SALE,
+            'audit_status' => 10 // 只显示审核通过的商品
+        ]);
         // 获取商品列表
         $list = parent::getList($params, $listRows);
         if ($list->isEmpty()) {
@@ -178,6 +181,10 @@ class Goods extends GoodsModel
         // 判断商品状态 (上架)
         if ($verifyStatus && $goodsInfo['status'] == GoodsStatusEnum::OFF_SALE) {
             throwError('很抱歉，当前商品已下架');
+        }
+        // 判断审核状态
+        if ($verifyStatus && isset($goodsInfo['audit_status']) && $goodsInfo['audit_status'] != 10) {
+            throwError('很抱歉，当前商品审核未通过');
         }
         // 整理商品数据并返回
         return $this->setGoodsDataFromApi($goodsInfo);

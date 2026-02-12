@@ -17,6 +17,7 @@ use app\store\controller\Controller;
 use app\store\model\store\User as StoreUserModel;
 use app\store\service\store\User as StoreUserService;
 use app\store\service\store\Role as StoreRoleService;
+use app\common\model\store\UserRole;
 
 /**
  * 商家用户控制器
@@ -36,12 +37,28 @@ class User extends Controller
     {
         // 当前登录用户的ID
         $storeUserId = StoreUserService::getLoginUserId();
+        // 用户信息
+        $userInfo = StoreUserModel::detail($storeUserId);
+        // 是否为商家
+        $userInfo['is_merchant'] = in_array(10004, UserRole::getRoleIdsByUserId($storeUserId));
+
         return $this->renderSuccess([
             // 用户信息
-            'userInfo' => StoreUserModel::detail($storeUserId),
+            'userInfo' => $userInfo,
             // 菜单权限
             'roles' => StoreRoleService::getLoginPermissions(),
         ]);
+    }
+
+    /**
+     * 获取所有商家用户列表 (用于下拉选择)
+     * @return Json
+     */
+    public function getAllMerchants(): Json
+    {
+        $model = new StoreUserModel;
+        $list = $model->getAllMerchants();
+        return $this->renderSuccess(compact('list'));
     }
 
     /**

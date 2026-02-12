@@ -37,14 +37,15 @@ class Merchant extends Controller
             return $this->renderError('您已经是商家了');
         }
         
-        // 简单的申请逻辑：直接通过
+        // 简单的申请逻辑：提交申请，状态为待审核 (20)
         $model = new MerchantModel;
         if ($model->save([
             'user_id' => $user['user_id'],
             'name' => $data['name'] ?? '我的店铺',
-            'store_id' => $this->storeId
+            'store_id' => $this->storeId,
+            'status' => 20 // 待审核
         ])) {
-            return $this->renderSuccess([], '申请成功');
+            return $this->renderSuccess([], '申请已提交，请等待管理员审核');
         }
         return $this->renderError('申请失败');
     }

@@ -237,4 +237,18 @@ class User extends StoreUserModel
         StoreUserService::update($this->toArray());
         return true;
     }
+
+    /**
+     * 获取所有商家用户
+     * @return \think\Collection
+     */
+    public function getAllMerchants()
+    {
+        return $this->alias('u')
+            ->join('store_user_role ur', 'u.store_user_id = ur.store_user_id')
+            ->where('ur.role_id', '=', 10004)
+            ->where('u.is_delete', '=', 0)
+            ->field(['u.store_user_id', 'u.user_name', 'u.real_name', 'u.merchant_id'])
+            ->select();
+    }
 }

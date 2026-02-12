@@ -24,6 +24,8 @@ use app\store\service\Goods as GoodsService;
 use app\common\enum\goods\SpecType as GoodsSpecTypeEnum;
 use app\common\enum\goods\Status as GoodsStatusEnum;
 use cores\exception\BaseException;
+use app\store\service\store\User as StoreUserService;
+use app\common\model\store\UserRole;
 
 /**
  * 商品模型
@@ -32,6 +34,29 @@ use cores\exception\BaseException;
  */
 class Goods extends GoodsModel
 {
+    /**
+     * 获取商品列表 (重写以支持权限过滤)
+     * @param array $param 查询条件
+     * @param int $listRows 分页数量
+     * @return mixed
+     * @throws \think\db\exception\DbException
+     */
+    public function getList(array $param = [], int $listRows = 15)
+    {
+        // 获取当前登录用户
+        $storeUser = StoreUserService::getLoginInfo();
+        if ($storeUser) {
+            $storeUserId = $storeUser['user']['store_user_id'];
+            // 检查是否为商家管理员 (角色10004)
+            $roleIds = UserRole::getRoleIdsByUserId($storeUserId);
+            if (in_array(10004, $roleIds)) {
+                // 强制只显示该商家的商品
+                $param['merchant_id'] = $storeUser['user']['merchant_id'];
+            }
+        }
+        return parent::getList($param, $listRows);
+    }
+
     /**
      * 获取商品详情
      * @param int $goodsId
@@ -151,6 +176,33 @@ class Goods extends GoodsModel
     }
 
     /**
+     * 商品审核
+     * @param array $data
+     * @return bool
+     */
+    public function audit(array $data): bool
+    {
+        // 验证数据
+        if (!isset($data['goodsId']) || !isset($data['state'])) {
+            $this->error = '参数错误';
+            return false;
+        }
+        $goodsId = $data['goodsId'];
+        $state = $data['state']; // 10: 通过, 30: 驳回
+
+        // 验证权限 (只有平台管理员可以审核)
+        $storeUser = StoreUserService::getLoginInfo();
+        $roleIds = UserRole::getRoleIdsByUserId($storeUser['user']['store_user_id']);
+        if (in_array(10004, $roleIds)) {
+            $this->error = '无权操作';
+            return false;
+        }
+
+        // 更新状态
+        return $this->update(['audit_status' => $state], ['goods_id' => $goodsId]) !== false;
+    }
+
+    /**
      * 软删除
      * @param array $goodsIds
      * @return bool
@@ -198,6 +250,31 @@ class Goods extends GoodsModel
      */
     private function createData(array $data): array
     {
+        // 获取当前登录用户并设置权限相关字段
+        $storeUser = StoreUserService::getLoginInfo();
+        $isMerchant = false;
+        if ($storeUser) {
+            $storeUserId = $storeUser['user']['store_user_id'];
+            $roleIds = UserRole::getRoleIdsByUserId($storeUserId);
+            if (in_array(10004, $roleIds)) {
+                $isMerchant = true;
+            }
+        }
+
+        if ($isMerchant) {
+            // 商家强制设置 merchant_id
+            $data['merchant_id'] = $storeUser['user']['merchant_id'];
+            // 商家发布/编辑需要审核
+            $data['audit_status'] = 20; // 20: 待审核
+        } else {
+            // 管理员可以指定商家
+            $data['merchant_id'] = $data['merchant_id'] ?? 0;
+            // 管理员发布/编辑默认通过
+            if (!isset($data['audit_status'])) {
+                 $data['audit_status'] = 10; // 10: 通过
+            }
+        }
+
         // 默认数据
         $data = \array_merge($data, [
             'line_price' => $data['line_price'] ?? 0,

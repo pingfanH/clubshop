@@ -303,17 +303,78 @@ class User extends UserModel
             $merchant = \app\common\model\Merchant::where('user_id', $this['user_id'])->find();
 
             if ($isMerchant == 1) {
+                $merchantId = 0;
                 if (!$merchant) {
                     $model = new \app\common\model\Merchant;
-                    return (bool)$model->save([
+                    $model->save([
                         'user_id' => $this['user_id'],
                         'name' => $this['nick_name'] . '的小店',
-                        'store_id' => $storeId
+                        'store_id' => $storeId,
+                        'status' => 10 // 默认通过
                     ]);
+                    $merchantId = $model['merchant_id'];
+                } else {
+                    $merchantId = $merchant['merchant_id'];
+                    // 确保状态为已通过
+                    if (!isset($merchant['status']) || $merchant['status'] != 10) {
+                        $merchant->save(['status' => 10]);
+                    }
                 }
+
+                // 自动创建/更新商家管理员账号
+                // 用户名优先级: user_name > mobile > nick_name
+                $userName = !empty($this['user_name']) ? $this['user_name'] : 
+                           (!empty($this['mobile']) ? $this['mobile'] : 'u' . $this['user_id']);
+                
+                // 检查是否存在
+                $storeUser = \app\store\model\store\User::where('user_name', $userName)
+                    ->where('store_id', $storeId)
+                    ->find();
+
+                if (!$storeUser) {
+                    // 创建新账号
+                    $newStoreUser = new \app\store\model\store\User;
+                    // 使用用户原有密码或默认密码
+                    $password = !empty($this['password']) ? $this['password'] : encryption_hash('123456');
+                    
+                    $newStoreUser->save([
+                        'user_name' => $userName,
+                        'password' => $password,
+                        'real_name' => $this['nick_name'],
+                        'store_id' => $storeId,
+                        'is_super' => 0,
+                        'merchant_id' => $merchantId
+                    ]);
+                    
+                    // 分配角色 10004 (商家管理员)
+                    \app\common\model\store\UserRole::create([
+                        'store_user_id' => $newStoreUser['store_user_id'],
+                        'role_id' => 10004
+                    ]);
+                } else {
+                    // 更新关联 merchant_id
+                    if (empty($storeUser['merchant_id']) || $storeUser['merchant_id'] != $merchantId) {
+                        $storeUser->save(['merchant_id' => $merchantId]);
+                    }
+                    
+                    // 检查是否有角色 10004
+                    $hasRole = \app\common\model\store\UserRole::where('store_user_id', $storeUser['store_user_id'])
+                        ->where('role_id', 10004)
+                        ->find();
+                    if (!$hasRole) {
+                         \app\common\model\store\UserRole::create([
+                            'store_user_id' => $storeUser['store_user_id'],
+                            'role_id' => 10004
+                        ]);
+                    }
+                }
+
             } else {
                 if ($merchant) {
-                    return (bool)$merchant->delete();
+                    $merchant->delete();
+                    // 解除商家账号绑定 (不删除账号，只清空 merchant_id)
+                    \app\store\model\store\User::where('merchant_id', $merchant['merchant_id'])
+                        ->update(['merchant_id' => 0]);
                 }
             }
             return true;

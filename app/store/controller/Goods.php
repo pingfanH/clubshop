@@ -136,6 +136,19 @@ class Goods extends Controller
     }
 
     /**
+     * 商品审核
+     * @return Json
+     */
+    public function audit(): Json
+    {
+        $model = new GoodsModel;
+        if ($model->audit($this->postData())) {
+            return $this->renderSuccess('操作成功');
+        }
+        return $this->renderError($model->getError() ?: '操作失败');
+    }
+
+    /**
      * 删除商品
      * @param array $goodsIds
      * @return Json

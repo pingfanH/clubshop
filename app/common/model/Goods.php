@@ -228,7 +228,7 @@ class Goods extends BaseModel
      * @param array $param
      * @return \think\db\BaseQuery
      */
-    private function getQueryFilter(array $param): \think\db\BaseQuery
+    protected function getQueryFilter(array $param): \think\db\BaseQuery
     {
         // 商品列表获取条件
         $params = $this->setQueryDefaultValue($param, [
@@ -237,6 +237,8 @@ class Goods extends BaseModel
             'goodsName' => null,     // 商品名称
             'goodsNo' => null,       // 商品编码
             'status' => 0,           // 商品状态(0全部 10上架 20下架)
+            'merchant_id' => null,   // 商家ID
+            'audit_status' => 0,     // 审核状态(0全部 10通过 20待审核 30驳回)
         ]);
         // 实例化新查询对象
         $query = $this->getNewQuery();
@@ -252,6 +254,10 @@ class Goods extends BaseModel
         }
         // 商品状态
         $params['status'] > 0 && $filter[] = ['status', '=', (int)$params['status']];
+        // 商家ID
+        !empty($params['merchant_id']) && $filter[] = ['merchant_id', '=', (int)$params['merchant_id']];
+        // 审核状态
+        $params['audit_status'] > 0 && $filter[] = ['audit_status', '=', (int)$params['audit_status']];
         // 商品分类
         if ($params['categoryId'] > 0) {
             // 关联商品与分类关系记录表
