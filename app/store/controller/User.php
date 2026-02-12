@@ -95,4 +95,19 @@ class User extends Controller
         }
         return $this->renderError($model->getError() ?: '操作失败');
     }
+
+    /**
+     * 设置/取消测试用户
+     * @param int $userId
+     * @param int $isTest
+     * @return Json
+     */
+    public function setTest(int $userId, int $isTest): Json
+    {
+        $model = UserModel::detail($userId);
+        if ($model->save(['is_test' => $isTest])) {
+            return $this->renderSuccess('操作成功');
+        }
+        return $this->renderError($model->getError() ?: '操作失败');
+    }
 }
