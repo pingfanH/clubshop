@@ -78,7 +78,7 @@ class User extends BaseModel
      */
     public function merchant(): HasOne
     {
-        return $this->hasOne('Merchant', 'user_id', 'user_id');
+        return $this->hasOne('app\common\model\Merchant', 'user_id', 'user_id');
     }
 
     /**

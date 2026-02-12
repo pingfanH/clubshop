@@ -153,7 +153,7 @@ class Goods extends BaseModel
      */
     public function merchant(): BelongsTo
     {
-        return $this->belongsTo('Merchant', 'merchant_id', 'merchant_id');
+        return $this->belongsTo('app\common\model\Merchant', 'merchant_id', 'merchant_id');
     }
 
     /**

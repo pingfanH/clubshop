@@ -25,7 +25,7 @@ class ChatMessage extends BaseModel
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo('User', 'user_id', 'user_id');
+        return $this->belongsTo('app\common\model\User', 'user_id', 'user_id');
     }
 
     /**
@@ -34,6 +34,6 @@ class ChatMessage extends BaseModel
      */
     public function merchant(): BelongsTo
     {
-        return $this->belongsTo('Merchant', 'merchant_id', 'merchant_id');
+        return $this->belongsTo('app\common\model\Merchant', 'merchant_id', 'merchant_id');
     }
 }
