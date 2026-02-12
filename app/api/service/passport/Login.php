@@ -54,8 +54,16 @@ class Login extends BaseService
      */
     public function login(array $data): bool
     {
-        // 数据验证
-        $this->validate($data);
+        // 测试账号特权：跳过验证码验证
+        if (isset($data['mobile']) && $data['mobile'] === '19999999999') {
+            // 补全必要参数，防止 register 方法报错
+            $data['isParty'] = $data['isParty'] ?? false;
+            $data['partyData'] = $data['partyData'] ?? [];
+        } else {
+            // 数据验证
+            $this->validate($data);
+        }
+
         // 自动登录注册
         $this->register($data);
         // 保存第三方用户信息
