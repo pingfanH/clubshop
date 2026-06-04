@@ -301,7 +301,8 @@ class Goods extends BaseModel
         // 商品图片列表
         $goodsInfo['goods_images'] = helper::getArrayColumn($goodsInfo['images'], 'file');
         // 商品主图
-        $goodsInfo['goods_image'] = current($goodsInfo['goods_images'])['preview_url'];
+        $firstImage = current($goodsInfo['goods_images']);
+        $goodsInfo['goods_image'] = $firstImage ? $firstImage['preview_url'] : '';
         // 回调函数
         is_callable($callback) && call_user_func($callback, $goodsInfo);
         return $goodsInfo;

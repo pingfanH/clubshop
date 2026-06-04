@@ -91,7 +91,37 @@ class UpdateSchema extends Command
                 $output->writeln("Created role 10004.");
             } else {
                  $output->writeln("Role 10004 already exists.");
+                 $storeId = $role['store_id'];
             }
+
+            // 5. Assign Permissions to Role 10004
+            $output->writeln("Assigning permissions to Role 10004...");
+            
+            // Clear existing permissions
+            Db::table("{$prefix}store_role_menu")->where('role_id', 10004)->delete();
+            
+            // Menu IDs for Merchant (Goods, Orders, Files, Logistics)
+            $menuIds = [
+                10001, // Home
+                10034, 10035, 10036, 10037, 10038, 10039, 10040, 10041, 10042, 10043, 10044, 10045, 10046, 10047, 10048, 10049, 10204, // Goods
+                10050, 10051, 10052, 10054, 10055, 10056, 10057, 10058, 10059, 10189, 10201, 10202, 10203, 10238, 10239, 10241, 10242, 10252, // Orders
+                10082, 10083, 10084, 10085, 10086, 10087, 10088, 10089, 10137, // Files
+                10115, 10119, 10120, 10121, 10122, 10123, 10124, 10125, 10126, 10127, 10128 // Logistics
+            ];
+            
+            $data = [];
+            $createTime = 1707753600;
+            foreach ($menuIds as $menuId) {
+                $data[] = [
+                    'role_id' => 10004,
+                    'menu_id' => $menuId,
+                    'store_id' => $storeId,
+                    'create_time' => $createTime
+                ];
+            }
+            
+            Db::table("{$prefix}store_role_menu")->insertAll($data);
+            $output->writeln("Assigned " . count($data) . " menu permissions to Role 10004.");
             
             $output->writeln("Schema update completed successfully.");
 
