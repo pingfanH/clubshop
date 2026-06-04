@@ -66,8 +66,8 @@ class Chat extends Controller
         
         // 获取店铺logo
         $storeLogo = '';
-        if ($store && !empty($store['logo_id'])) {
-            $logoFile = \app\common\model\UploadFile::detail($store['logo_id']);
+        if ($store && !empty($store['logo_image_id'])) {
+            $logoFile = \app\common\model\UploadFile::detail($store['logo_image_id']);
             $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
         }
         
@@ -289,8 +289,8 @@ class Chat extends Controller
         
         // 获取店铺logo
         $storeLogo = '';
-        if ($store && !empty($store['logo_id'])) {
-            $logoFile = \app\common\model\UploadFile::detail($store['logo_id']);
+        if ($store && !empty($store['logo_image_id'])) {
+            $logoFile = \app\common\model\UploadFile::detail($store['logo_image_id']);
             $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
         }
         
