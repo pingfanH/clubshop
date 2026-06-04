@@ -64,6 +64,13 @@ class Chat extends Controller
         $store = \app\common\model\Store::detail((int)$this->storeId);
         $storeName = $store ? $store['store_name'] : '店铺';
         
+        // 获取店铺logo
+        $storeLogo = '';
+        if ($store && !empty($store['logo_id'])) {
+            $logoFile = \app\common\model\UploadFile::detail($store['logo_id']);
+            $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
+        }
+        
         // 获取用户的所有会话（按商家分组，获取最后一条消息）
         $sessions = ChatMessageModel::where('user_id', $user['user_id'])
             ->where('store_id', $this->storeId)
@@ -95,8 +102,8 @@ class Chat extends Controller
             
             $list[] = [
                 'merchant_id' => (int)$session['merchant_id'],
-                'merchant_name' => $storeName, // 使用店铺名称
-                'merchant_logo' => '', // 店铺logo需要单独处理
+                'merchant_name' => $storeName,
+                'merchant_logo' => $storeLogo,
                 'last_message' => $lastMessage ? $lastMessage['content'] : '',
                 'last_message_type' => $lastMessage ? (int)$lastMessage['type'] : 10,
                 'last_message_time' => (int)$session['last_message_time'],
