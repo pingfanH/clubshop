@@ -158,15 +158,15 @@ class Chat extends Controller
         
         // 根据选择的身份设置发送者信息
         if ($useStoreIdentity) {
-            // 使用店铺身份
-            $senderName = $store['store_name'] ?? '店铺';
+            // 使用店铺身份（匿名）
+            $senderName = ''; // 匿名不显示名称
             $senderAvatar = '';
             if ($store && !empty($store['logo_id'])) {
                 $logoFile = UploadFileModel::detail($store['logo_id']);
                 $senderAvatar = $logoFile ? $logoFile['preview_url'] : '';
             }
         } else {
-            // 使用个人身份
+            // 使用个人身份（显示账号名称）
             $senderName = $storeUser['real_name'] ?? $storeUser['user_name'] ?? '管理员';
             $senderAvatar = '';
         }
@@ -221,13 +221,15 @@ class Chat extends Controller
         
         // 根据选择的身份设置发送者信息
         if ($useStoreIdentity) {
-            $senderName = $store['store_name'] ?? '店铺';
+            // 使用店铺身份（匿名）
+            $senderName = ''; // 匿名不显示名称
             $senderAvatar = '';
             if ($store && !empty($store['logo_id'])) {
                 $logoFile = UploadFileModel::detail($store['logo_id']);
                 $senderAvatar = $logoFile ? $logoFile['preview_url'] : '';
             }
         } else {
+            // 使用个人身份（显示账号名称）
             $senderName = $storeUser['real_name'] ?? $storeUser['user_name'] ?? '管理员';
             $senderAvatar = '';
         }
