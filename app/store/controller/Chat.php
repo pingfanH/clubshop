@@ -86,7 +86,7 @@ class Chat extends Controller
     public function messages(): Json
     {
         $userId = $this->request->get('user_id', 0);
-        $merchantId = $this->store['merchant_id'] ?? 0;
+        $merchantId = $this->request->get('merchant_id', 0);
         $limit = $this->request->get('limit', 50);
         
         if (empty($userId) || empty($merchantId)) {
@@ -137,10 +137,15 @@ class Chat extends Controller
     public function send(): Json
     {
         $userId = $this->request->post('user_id', 0);
-        $merchantId = $this->store['merchant_id'] ?? 0;
+        $merchantId = $this->request->post('merchant_id', 0);
         $content = $this->request->post('content', '');
         $type = $this->request->post('type', 10);
         $useStoreIdentity = $this->request->post('use_store_identity', 1); // 1使用店铺身份 0使用个人身份
+        
+        // 如果没有传merchant_id，使用店铺关联的商家
+        if (empty($merchantId)) {
+            $merchantId = $this->store['merchant_id'] ?? 0;
+        }
         
         if (empty($userId) || empty($merchantId) || empty($content)) {
             return $this->renderError('参数错误');
@@ -196,9 +201,14 @@ class Chat extends Controller
     public function sendImage(): Json
     {
         $userId = $this->request->post('user_id', 0);
-        $merchantId = $this->store['merchant_id'] ?? 0;
+        $merchantId = $this->request->post('merchant_id', 0);
         $imageUrl = $this->request->post('image_url', '');
         $useStoreIdentity = $this->request->post('use_store_identity', 1);
+        
+        // 如果没有传merchant_id，使用店铺关联的商家
+        if (empty($merchantId)) {
+            $merchantId = $this->store['merchant_id'] ?? 0;
+        }
         
         if (empty($userId) || empty($merchantId) || empty($imageUrl)) {
             return $this->renderError('参数错误');
