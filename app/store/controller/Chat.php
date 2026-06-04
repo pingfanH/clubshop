@@ -114,8 +114,23 @@ class Chat extends Controller
         // 获取店铺信息
         $store = StoreModel::detail((int)$this->storeId);
         
+        // 获取店铺logo
+        $storeLogo = '';
+        if ($store && !empty($store['logo_image_id'])) {
+            $logoFile = UploadFileModel::detail($store['logo_image_id']);
+            $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
+        }
+        
+        // 为匿名消息填充店铺logo
+        $messages = $list->items();
+        foreach ($messages as &$msg) {
+            if ($msg['sender_type'] == 20 && empty($msg['sender_avatar'])) {
+                $msg['sender_avatar'] = $storeLogo;
+            }
+        }
+        
         return $this->renderSuccess([
-            'list' => $list->items(),
+            'list' => $messages,
             'total' => $list->total(),
             'user' => $user ? [
                 'user_id' => (int)$user['user_id'],
@@ -126,6 +141,7 @@ class Chat extends Controller
             'store' => $store ? [
                 'store_id' => (int)$store['store_id'],
                 'store_name' => $store['store_name'],
+                'store_logo' => $storeLogo,
             ] : null,
         ]);
     }
