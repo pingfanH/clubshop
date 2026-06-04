@@ -154,6 +154,8 @@ class Chat extends Controller
         
         // 获取当前管理员信息
         $storeUser = $this->store;
+        $storeUserId = $storeUser['user']['store_user_id'] ?? 0;
+        $storeUserName = $storeUser['user']['real_name'] ?? $storeUser['user']['user_name'] ?? '管理员';
         $store = StoreModel::detail((int)$this->storeId);
         
         // 根据选择的身份设置发送者信息
@@ -167,7 +169,7 @@ class Chat extends Controller
             }
         } else {
             // 使用个人身份（显示账号名称）
-            $senderName = $storeUser['real_name'] ?? $storeUser['user_name'] ?? '管理员';
+            $senderName = $storeUserName;
             $senderAvatar = '';
         }
         
@@ -175,7 +177,7 @@ class Chat extends Controller
         if ($model->save([
             'user_id' => $userId,
             'merchant_id' => $merchantId,
-            'store_user_id' => $storeUser['store_user_id'] ?? 0,
+            'store_user_id' => $storeUserId,
             'sender_type' => 20, // 商家/管理员
             'sender_name' => $senderName,
             'sender_avatar' => $senderAvatar,
@@ -188,6 +190,7 @@ class Chat extends Controller
             return $this->renderSuccess([
                 'message_id' => $model['message_id'],
                 'sender_name' => $senderName,
+                'store_user_id' => $storeUserId,
             ], '发送成功');
         }
         
@@ -217,6 +220,8 @@ class Chat extends Controller
         
         // 获取当前管理员信息
         $storeUser = $this->store;
+        $storeUserId = $storeUser['user']['store_user_id'] ?? 0;
+        $storeUserName = $storeUser['user']['real_name'] ?? $storeUser['user']['user_name'] ?? '管理员';
         $store = StoreModel::detail((int)$this->storeId);
         
         // 根据选择的身份设置发送者信息
@@ -230,7 +235,7 @@ class Chat extends Controller
             }
         } else {
             // 使用个人身份（显示账号名称）
-            $senderName = $storeUser['real_name'] ?? $storeUser['user_name'] ?? '管理员';
+            $senderName = $storeUserName;
             $senderAvatar = '';
         }
         
@@ -238,7 +243,7 @@ class Chat extends Controller
         if ($model->save([
             'user_id' => $userId,
             'merchant_id' => $merchantId,
-            'store_user_id' => $storeUser['store_user_id'] ?? 0,
+            'store_user_id' => $storeUserId,
             'sender_type' => 20,
             'sender_name' => $senderName,
             'sender_avatar' => $senderAvatar,
