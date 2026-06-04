@@ -121,10 +121,21 @@ class Chat extends Controller
             $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
         }
         
-        // 为匿名消息填充店铺logo
+        // 获取用户头像
+        $userAvatar = '';
+        if ($user && !empty($user['avatar_id'])) {
+            $avatarFile = UploadFileModel::detail($user['avatar_id']);
+            $userAvatar = $avatarFile ? $avatarFile['preview_url'] : '';
+        }
+        
+        // 为消息填充头像
         $messages = $list->items();
         foreach ($messages as &$msg) {
-            if ($msg['sender_type'] == 20 && empty($msg['sender_avatar'])) {
+            if ($msg['sender_type'] == 10) {
+                // 用户消息，填充用户头像
+                $msg['sender_avatar'] = $userAvatar;
+            } elseif ($msg['sender_type'] == 20 && empty($msg['sender_avatar'])) {
+                // 匿名商家消息，填充店铺logo
                 $msg['sender_avatar'] = $storeLogo;
             }
         }
