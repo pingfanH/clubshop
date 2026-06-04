@@ -25,17 +25,19 @@ class Chat extends Controller
      */
     public function sessions(): Json
     {
-        $merchantId = $this->store['merchant_id'] ?? 0;
+        // 获取当前店铺下的所有商家
+        $merchantIds = MerchantModel::where('store_id', $this->storeId)
+            ->column('merchant_id');
         
-        if (empty($merchantId)) {
-            return $this->renderError('当前店铺未关联商家');
+        if (empty($merchantIds)) {
+            return $this->renderSuccess(['list' => []]);
         }
         
-        // 获取与当前商家的所有会话
-        $sessions = ChatMessageModel::where('merchant_id', $merchantId)
+        // 获取与当前店铺商家的所有会话
+        $sessions = ChatMessageModel::where('merchant_id', 'in', $merchantIds)
             ->where('store_id', $this->storeId)
-            ->field('user_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
-            ->group('user_id')
+            ->field('user_id, merchant_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
+            ->group('user_id, merchant_id')
             ->order('last_message_time', 'desc')
             ->select();
         
@@ -47,14 +49,14 @@ class Chat extends Controller
             
             // 获取最后一条消息
             $lastMessage = ChatMessageModel::where('user_id', $session['user_id'])
-                ->where('merchant_id', $merchantId)
+                ->where('merchant_id', $session['merchant_id'])
                 ->where('store_id', $this->storeId)
                 ->order('create_time', 'desc')
                 ->find();
             
             // 计算未读消息数（用户发送的未读消息）
             $unreadCount = ChatMessageModel::where('user_id', $session['user_id'])
-                ->where('merchant_id', $merchantId)
+                ->where('merchant_id', $session['merchant_id'])
                 ->where('store_id', $this->storeId)
                 ->where('sender_type', 10) // 用户发送的
                 ->where('is_read', 0)
