@@ -153,7 +153,7 @@ class Chat extends Controller
         }
         
         // 获取当前管理员信息
-        $storeUser = $this->admin;
+        $storeUser = $this->store;
         $store = StoreModel::detail((int)$this->storeId);
         
         // 根据选择的身份设置发送者信息
@@ -175,7 +175,7 @@ class Chat extends Controller
         if ($model->save([
             'user_id' => $userId,
             'merchant_id' => $merchantId,
-            'store_user_id' => $storeUser['store_user_id'],
+            'store_user_id' => $storeUser['store_user_id'] ?? 0,
             'sender_type' => 20, // 商家/管理员
             'sender_name' => $senderName,
             'sender_avatar' => $senderAvatar,
@@ -216,7 +216,7 @@ class Chat extends Controller
         }
         
         // 获取当前管理员信息
-        $storeUser = $this->admin;
+        $storeUser = $this->store;
         $store = StoreModel::detail((int)$this->storeId);
         
         // 根据选择的身份设置发送者信息
@@ -236,7 +236,7 @@ class Chat extends Controller
         if ($model->save([
             'user_id' => $userId,
             'merchant_id' => $merchantId,
-            'store_user_id' => $storeUser['store_user_id'],
+            'store_user_id' => $storeUser['store_user_id'] ?? 0,
             'sender_type' => 20,
             'sender_name' => $senderName,
             'sender_avatar' => $senderAvatar,
