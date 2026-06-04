@@ -13,8 +13,8 @@ declare (strict_types=1);
 namespace app\api\controller;
 
 use think\response\Json;
-use app\api\model\{Goods as GoodsModel};
-use app\api\service\{Goods as GoodsService};
+use app\api\model\{Goods as GoodsModel, UserBrowseLog as UserBrowseLogModel};
+use app\api\service\{Goods as GoodsService, User as UserService};
 use cores\exception\BaseException;
 
 /**
@@ -52,6 +52,15 @@ class Goods extends Controller
         // 商品详情
         $model = new GoodsModel;
         $goodsInfo = $model->getDetails($goodsId, $verifyStatus);
+        // 记录浏览历史（异步记录，不影响主流程）
+        if (UserService::isLogin()) {
+            try {
+                $browseLogModel = new UserBrowseLogModel;
+                $browseLogModel->add($goodsId);
+            } catch (\Exception $e) {
+                // 记录失败不影响主流程
+            }
+        }
         return $this->renderSuccess(['detail' => $goodsInfo]);
     }
 
