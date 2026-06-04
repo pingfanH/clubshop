@@ -64,6 +64,7 @@ class Chat extends Controller
             
             $list[] = [
                 'user_id' => (int)$session['user_id'],
+                'merchant_id' => (int)$session['merchant_id'],
                 'user_name' => $user['nick_name'] ?: '用户' . $session['user_id'],
                 'user_avatar' => $user['avatar_url'] ?? '',
                 'user_mobile' => $user['mobile'] ?? '',
