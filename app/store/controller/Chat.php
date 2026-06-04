@@ -1,13 +1,4 @@
 <?php
-// +----------------------------------------------------------------------
-// | 萤火商城系统 [ 致力于通过产品和服务，帮助商家高效化开拓市场 ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2017~2025 https://www.yiovo.com All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed 这不是一个自由软件，不允许对程序代码以任何形式任何目的的再发行
-// +----------------------------------------------------------------------
-// | Author: 萤火科技 <admin@yiovo.com>
-// +----------------------------------------------------------------------
 declare (strict_types=1);
 
 namespace app\store\controller;
@@ -16,6 +7,8 @@ use think\response\Json;
 use app\common\model\ChatMessage as ChatMessageModel;
 use app\common\model\User as UserModel;
 use app\common\model\Merchant as MerchantModel;
+use app\common\model\Store as StoreModel;
+use app\common\model\UploadFile as UploadFileModel;
 use cores\exception\BaseException;
 
 /**
@@ -26,7 +19,7 @@ use cores\exception\BaseException;
 class Chat extends Controller
 {
     /**
-     * 获取会话列表（与当前商家的对话）
+     * 获取会话列表（与当前店铺的对话）
      * @return Json
      * @throws BaseException
      */
@@ -92,7 +85,6 @@ class Chat extends Controller
     {
         $userId = $this->request->get('user_id', 0);
         $merchantId = $this->store['merchant_id'] ?? 0;
-        $page = $this->request->get('page', 1);
         $limit = $this->request->get('limit', 50);
         
         if (empty($userId) || empty($merchantId)) {
@@ -116,6 +108,8 @@ class Chat extends Controller
         
         // 获取用户信息
         $user = UserModel::detail((int)$userId);
+        // 获取店铺信息
+        $store = StoreModel::detail((int)$this->storeId);
         
         return $this->renderSuccess([
             'list' => $list->items(),
@@ -125,6 +119,10 @@ class Chat extends Controller
                 'nick_name' => $user['nick_name'],
                 'avatar_url' => $user['avatar_url'] ?? '',
                 'mobile' => $user['mobile'],
+            ] : null,
+            'store' => $store ? [
+                'store_id' => (int)$store['store_id'],
+                'store_name' => $store['store_name'],
             ] : null,
         ]);
     }
@@ -140,23 +138,49 @@ class Chat extends Controller
         $merchantId = $this->store['merchant_id'] ?? 0;
         $content = $this->request->post('content', '');
         $type = $this->request->post('type', 10);
+        $useStoreIdentity = $this->request->post('use_store_identity', 1); // 1使用店铺身份 0使用个人身份
         
         if (empty($userId) || empty($merchantId) || empty($content)) {
             return $this->renderError('参数错误');
+        }
+        
+        // 获取当前管理员信息
+        $storeUser = $this->admin;
+        $store = StoreModel::detail((int)$this->storeId);
+        
+        // 根据选择的身份设置发送者信息
+        if ($useStoreIdentity) {
+            // 使用店铺身份
+            $senderName = $store['store_name'] ?? '店铺';
+            $senderAvatar = '';
+            if ($store && !empty($store['logo_id'])) {
+                $logoFile = UploadFileModel::detail($store['logo_id']);
+                $senderAvatar = $logoFile ? $logoFile['preview_url'] : '';
+            }
+        } else {
+            // 使用个人身份
+            $senderName = $storeUser['real_name'] ?: $storeUser['user_name'];
+            $senderAvatar = '';
         }
         
         $model = new ChatMessageModel;
         if ($model->save([
             'user_id' => $userId,
             'merchant_id' => $merchantId,
-            'sender_type' => 20, // 商家
+            'store_user_id' => $storeUser['store_user_id'],
+            'sender_type' => 20, // 商家/管理员
+            'sender_name' => $senderName,
+            'sender_avatar' => $senderAvatar,
             'content' => $content,
             'type' => $type,
             'store_id' => $this->storeId,
             'is_read' => 1,
             'create_time' => time(),
         ])) {
-            return $this->renderSuccess([], '发送成功');
+            return $this->renderSuccess([
+                'message_id' => $model['message_id'],
+                'sender_name' => $senderName,
+            ], '发送成功');
         }
         
         return $this->renderError('发送失败');
@@ -172,16 +196,37 @@ class Chat extends Controller
         $userId = $this->request->post('user_id', 0);
         $merchantId = $this->store['merchant_id'] ?? 0;
         $imageUrl = $this->request->post('image_url', '');
+        $useStoreIdentity = $this->request->post('use_store_identity', 1);
         
         if (empty($userId) || empty($merchantId) || empty($imageUrl)) {
             return $this->renderError('参数错误');
+        }
+        
+        // 获取当前管理员信息
+        $storeUser = $this->admin;
+        $store = StoreModel::detail((int)$this->storeId);
+        
+        // 根据选择的身份设置发送者信息
+        if ($useStoreIdentity) {
+            $senderName = $store['store_name'] ?? '店铺';
+            $senderAvatar = '';
+            if ($store && !empty($store['logo_id'])) {
+                $logoFile = UploadFileModel::detail($store['logo_id']);
+                $senderAvatar = $logoFile ? $logoFile['preview_url'] : '';
+            }
+        } else {
+            $senderName = $storeUser['real_name'] ?: $storeUser['user_name'];
+            $senderAvatar = '';
         }
         
         $model = new ChatMessageModel;
         if ($model->save([
             'user_id' => $userId,
             'merchant_id' => $merchantId,
+            'store_user_id' => $storeUser['store_user_id'],
             'sender_type' => 20,
+            'sender_name' => $senderName,
+            'sender_avatar' => $senderAvatar,
             'content' => $imageUrl,
             'type' => 20, // 图片消息
             'store_id' => $this->storeId,

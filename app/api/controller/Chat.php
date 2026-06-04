@@ -5,6 +5,7 @@ namespace app\api\controller;
 
 use app\common\model\ChatMessage as ChatMessageModel;
 use app\common\model\Merchant as MerchantModel;
+use app\common\model\Store as StoreModel;
 
 /**
  * 聊天控制器
@@ -74,14 +75,23 @@ class Chat extends Controller
                 ->order('create_time', 'desc')
                 ->find();
             
+            // 计算未读消息数
+            $unreadCount = ChatMessageModel::where('user_id', $user['user_id'])
+                ->where('merchant_id', $session['merchant_id'])
+                ->where('store_id', $this->storeId)
+                ->where('sender_type', 20) // 商家/管理员发送的
+                ->where('is_read', 0)
+                ->count();
+            
             $list[] = [
                 'merchant_id' => (int)$session['merchant_id'],
                 'merchant_name' => $merchant['name'],
                 'merchant_logo' => $merchant['logo'] ? $merchant['logo']['preview_url'] : '',
                 'last_message' => $lastMessage ? $lastMessage['content'] : '',
+                'last_message_type' => $lastMessage ? (int)$lastMessage['type'] : 10,
                 'last_message_time' => (int)$session['last_message_time'],
                 'message_count' => (int)$session['message_count'],
-                'unread_count' => 0, // 暂时不实现未读计数
+                'unread_count' => (int)$unreadCount,
             ];
         }
         
@@ -104,16 +114,30 @@ class Chat extends Controller
             return $this->renderError('参数错误');
         }
 
+        // 获取用户头像
+        $userAvatar = '';
+        if (!empty($user['avatar_id'])) {
+            $uploadFile = \app\common\model\UploadFile::detail($user['avatar_id']);
+            $userAvatar = $uploadFile ? $uploadFile['preview_url'] : '';
+        }
+
         $model = new ChatMessageModel;
         if ($model->save([
             'user_id' => $user['user_id'],
             'merchant_id' => $param['merchant_id'],
+            'store_user_id' => 0,
             'sender_type' => 10, // User
+            'sender_name' => $user['nick_name'] ?: '用户' . $user['user_id'],
+            'sender_avatar' => $userAvatar,
             'content' => $param['content'],
             'type' => $param['type'] ?? 10,
             'store_id' => $this->storeId,
+            'is_read' => 0,
+            'create_time' => time(),
         ])) {
-            return $this->renderSuccess([], '发送成功');
+            return $this->renderSuccess([
+                'message_id' => $model['message_id'],
+            ], '发送成功');
         }
         return $this->renderError('发送失败');
     }
@@ -132,14 +156,26 @@ class Chat extends Controller
             return $this->renderError('参数错误');
         }
 
+        // 获取用户头像
+        $userAvatar = '';
+        if (!empty($user['avatar_id'])) {
+            $uploadFile = \app\common\model\UploadFile::detail($user['avatar_id']);
+            $userAvatar = $uploadFile ? $uploadFile['preview_url'] : '';
+        }
+
         $model = new ChatMessageModel;
         if ($model->save([
             'user_id' => $user['user_id'],
             'merchant_id' => $param['merchant_id'],
+            'store_user_id' => 0,
             'sender_type' => 10,
+            'sender_name' => $user['nick_name'] ?: '用户' . $user['user_id'],
+            'sender_avatar' => $userAvatar,
             'content' => $param['image_url'],
             'type' => 20, // 图片消息
             'store_id' => $this->storeId,
+            'is_read' => 0,
+            'create_time' => time(),
         ])) {
             return $this->renderSuccess([], '发送成功');
         }
@@ -174,14 +210,26 @@ class Chat extends Controller
             'goods_price' => $goods['goods_price_min'],
         ];
 
+        // 获取用户头像
+        $userAvatar = '';
+        if (!empty($user['avatar_id'])) {
+            $uploadFile = \app\common\model\UploadFile::detail($user['avatar_id']);
+            $userAvatar = $uploadFile ? $uploadFile['preview_url'] : '';
+        }
+
         $model = new ChatMessageModel;
         if ($model->save([
             'user_id' => $user['user_id'],
             'merchant_id' => $param['merchant_id'],
+            'store_user_id' => 0,
             'sender_type' => 10,
+            'sender_name' => $user['nick_name'] ?: '用户' . $user['user_id'],
+            'sender_avatar' => $userAvatar,
             'content' => json_encode($goodsData),
             'type' => 30, // 商品卡片
             'store_id' => $this->storeId,
+            'is_read' => 0,
+            'create_time' => time(),
         ])) {
             return $this->renderSuccess([], '发送成功');
         }
@@ -201,6 +249,14 @@ class Chat extends Controller
         if (empty($merchantId)) {
             return $this->renderError('参数错误');
         }
+        
+        // 标记消息为已读
+        ChatMessageModel::where('user_id', $user['user_id'])
+            ->where('merchant_id', $merchantId)
+            ->where('store_id', $this->storeId)
+            ->where('sender_type', 20)
+            ->where('is_read', 0)
+            ->update(['is_read' => 1]);
         
         $list = ChatMessageModel::where('user_id', $user['user_id'])
             ->where('merchant_id', $merchantId)

@@ -1,13 +1,4 @@
 <?php
-// +----------------------------------------------------------------------
-// | 萤火商城系统 [ 致力于通过产品和服务，帮助商家高效化开拓市场 ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2017~2025 https://www.yiovo.com All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed 这不是一个自由软件，不允许对程序代码以任何形式任何目的的再发行
-// +----------------------------------------------------------------------
-// | Author: 萤火科技 <admin@yiovo.com>
-// +----------------------------------------------------------------------
 declare (strict_types=1);
 
 namespace app\admin\controller;
@@ -95,7 +86,6 @@ class Chat extends Controller
         $userId = $this->request->get('user_id', 0);
         $merchantId = $this->request->get('merchant_id', 0);
         $storeId = $this->request->get('store_id', 0);
-        $page = $this->request->get('page', 1);
         $limit = $this->request->get('limit', 50);
         
         if (empty($userId) || empty($merchantId)) {
@@ -155,14 +145,25 @@ class Chat extends Controller
             return $this->renderError('参数错误');
         }
         
+        // 获取店铺信息
+        $store = StoreModel::detail((int)$storeId);
+        
+        // 使用店铺身份
+        $senderName = $store ? $store['store_name'] : '平台';
+        $senderAvatar = '';
+        
         $model = new ChatMessageModel;
         if ($model->save([
             'user_id' => $userId,
             'merchant_id' => $merchantId,
+            'store_user_id' => 0, // 超管发送
             'sender_type' => 20, // 商家
+            'sender_name' => $senderName,
+            'sender_avatar' => $senderAvatar,
             'content' => $content,
             'type' => $type,
             'store_id' => $storeId,
+            'is_read' => 1,
             'create_time' => time(),
         ])) {
             return $this->renderSuccess([], '发送成功');
