@@ -167,7 +167,7 @@ class Chat extends Controller
             }
         } else {
             // 使用个人身份
-            $senderName = $storeUser['real_name'] ?: $storeUser['user_name'];
+            $senderName = $storeUser['real_name'] ?? $storeUser['user_name'] ?? '管理员';
             $senderAvatar = '';
         }
         
@@ -228,7 +228,7 @@ class Chat extends Controller
                 $senderAvatar = $logoFile ? $logoFile['preview_url'] : '';
             }
         } else {
-            $senderName = $storeUser['real_name'] ?: $storeUser['user_name'];
+            $senderName = $storeUser['real_name'] ?? $storeUser['user_name'] ?? '管理员';
             $senderAvatar = '';
         }
         
