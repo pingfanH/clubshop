@@ -47,6 +47,13 @@ class Chat extends Controller
             $user = UserModel::detail((int)$session['user_id']);
             if (empty($user)) continue;
             
+            // 获取用户头像
+            $userAvatar = '';
+            if (!empty($user['avatar_id'])) {
+                $avatarFile = UploadFileModel::detail($user['avatar_id']);
+                $userAvatar = $avatarFile ? $avatarFile['preview_url'] : '';
+            }
+            
             // 获取最后一条消息
             $lastMessage = ChatMessageModel::where('user_id', $session['user_id'])
                 ->where('merchant_id', $session['merchant_id'])
@@ -66,7 +73,7 @@ class Chat extends Controller
                 'user_id' => (int)$session['user_id'],
                 'merchant_id' => (int)$session['merchant_id'],
                 'user_name' => $user['nick_name'] ?: '用户' . $session['user_id'],
-                'user_avatar' => $user['avatar_url'] ?? '',
+                'user_avatar' => $userAvatar,
                 'user_mobile' => $user['mobile'] ?? '',
                 'last_message' => $lastMessage ? $lastMessage['content'] : '',
                 'last_message_type' => $lastMessage ? (int)$lastMessage['type'] : 10,
