@@ -280,12 +280,19 @@ class Chat extends Controller
         // 获取店铺信息
         $store = \app\common\model\Store::detail((int)$this->storeId);
         
-        // 构建返回的商家信息（使用店铺名称）
+        // 获取店铺logo
+        $storeLogo = '';
+        if ($store && !empty($store['logo_id'])) {
+            $logoFile = \app\common\model\UploadFile::detail($store['logo_id']);
+            $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
+        }
+        
+        // 构建返回的商家信息（使用店铺名称和logo）
         $merchantInfo = [
             'merchant_id' => (int)$merchantId,
             'name' => $store ? $store['store_name'] : ($merchant ? $merchant['name'] : '客服'),
             'logo' => [
-                'preview_url' => '' // 店铺logo需要单独处理
+                'preview_url' => $storeLogo
             ],
         ];
             
