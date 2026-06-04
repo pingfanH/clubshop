@@ -21,6 +21,9 @@ class Chat extends Controller
      */
     public function getDefaultMerchant()
     {
+        // 获取当前店铺信息
+        $store = \app\common\model\Store::detail((int)$this->storeId);
+        
         // 查询当前店铺的"平台自营"商家
         $merchant = MerchantModel::where('store_id', $this->storeId)
             ->where('name', '平台自营')
@@ -39,9 +42,12 @@ class Chat extends Controller
             ]);
         }
         
+        // 返回店铺信息而不是商家信息
         return $this->renderSuccess([
             'merchant_id' => (int)$merchant['merchant_id'],
-            'merchant_name' => $merchant['name'],
+            'merchant_name' => $store ? $store['store_name'] : '店铺客服',
+            'merchant_logo' => '', // 店铺logo需要单独处理
+            'store_name' => $store ? $store['store_name'] : '店铺',
         ]);
     }
 
@@ -137,6 +143,7 @@ class Chat extends Controller
         ])) {
             return $this->renderSuccess([
                 'message_id' => $model['message_id'],
+                'create_time' => $model['create_time'],
             ], '发送成功');
         }
         return $this->renderError('发送失败');
@@ -266,7 +273,21 @@ class Chat extends Controller
             
         // 获取商户信息
         $merchant = MerchantModel::detail((int)$merchantId);
+        // 获取店铺信息
+        $store = \app\common\model\Store::detail((int)$this->storeId);
+        
+        // 构建返回的商家信息（使用店铺名称）
+        $merchantInfo = [
+            'merchant_id' => (int)$merchantId,
+            'name' => $store ? $store['store_name'] : ($merchant ? $merchant['name'] : '客服'),
+            'logo' => [
+                'preview_url' => '' // 店铺logo需要单独处理
+            ],
+        ];
             
-        return $this->renderSuccess(compact('list', 'merchant'));
+        return $this->renderSuccess([
+            'list' => $list,
+            'merchant' => $merchantInfo,
+        ]);
     }
 }
