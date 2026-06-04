@@ -14,6 +14,37 @@ use app\common\model\Merchant as MerchantModel;
 class Chat extends Controller
 {
     /**
+     * 获取当前店铺的默认商家（平台自营）
+     * @return \think\response\Json
+     * @throws \cores\exception\BaseException
+     */
+    public function getDefaultMerchant()
+    {
+        // 查询当前店铺的"平台自营"商家
+        $merchant = MerchantModel::where('store_id', $this->storeId)
+            ->where('name', '平台自营')
+            ->find();
+        
+        // 如果不存在则自动创建
+        if (empty($merchant)) {
+            $merchant = new MerchantModel;
+            $merchant->save([
+                'user_id' => 0,
+                'store_id' => $this->storeId,
+                'name' => '平台自营',
+                'status' => 10,
+                'create_time' => time(),
+                'update_time' => time(),
+            ]);
+        }
+        
+        return $this->renderSuccess([
+            'merchant_id' => (int)$merchant['merchant_id'],
+            'merchant_name' => $merchant['name'],
+        ]);
+    }
+
+    /**
      * 获取会话列表
      * @return \think\response\Json
      * @throws \cores\exception\BaseException
