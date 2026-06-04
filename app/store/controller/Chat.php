@@ -157,20 +157,23 @@ class Chat extends Controller
         $storeUserId = $storeUser['user']['store_user_id'] ?? 0;
         $storeUserName = $storeUser['user']['real_name'] ?? $storeUser['user']['user_name'] ?? '管理员';
         $store = StoreModel::detail((int)$this->storeId);
+        $storeName = $store['store_name'] ?? '店铺';
         
         // 根据选择的身份设置发送者信息
         if ($useStoreIdentity) {
-            // 使用店铺身份（匿名）
-            $senderName = ''; // 匿名不显示名称
+            // 使用店铺身份（匿名）- 后台显示店铺名称，前端不显示
+            $senderName = $storeName;
             $senderAvatar = '';
             if ($store && !empty($store['logo_id'])) {
                 $logoFile = UploadFileModel::detail($store['logo_id']);
                 $senderAvatar = $logoFile ? $logoFile['preview_url'] : '';
             }
+            $isAnonymous = 1; // 匿名标记
         } else {
             // 使用个人身份（显示账号名称）
             $senderName = $storeUserName;
             $senderAvatar = '';
+            $isAnonymous = 0;
         }
         
         $model = new ChatMessageModel;
@@ -181,6 +184,7 @@ class Chat extends Controller
             'sender_type' => 20, // 商家/管理员
             'sender_name' => $senderName,
             'sender_avatar' => $senderAvatar,
+            'is_anonymous' => $useStoreIdentity ? 1 : 0,
             'content' => $content,
             'type' => $type,
             'store_id' => $this->storeId,
@@ -191,6 +195,7 @@ class Chat extends Controller
                 'message_id' => $model['message_id'],
                 'sender_name' => $senderName,
                 'store_user_id' => $storeUserId,
+                'is_anonymous' => $useStoreIdentity ? 1 : 0,
             ], '发送成功');
         }
         
@@ -223,11 +228,12 @@ class Chat extends Controller
         $storeUserId = $storeUser['user']['store_user_id'] ?? 0;
         $storeUserName = $storeUser['user']['real_name'] ?? $storeUser['user']['user_name'] ?? '管理员';
         $store = StoreModel::detail((int)$this->storeId);
+        $storeName = $store['store_name'] ?? '店铺';
         
         // 根据选择的身份设置发送者信息
         if ($useStoreIdentity) {
-            // 使用店铺身份（匿名）
-            $senderName = ''; // 匿名不显示名称
+            // 使用店铺身份（匿名）- 后台显示店铺名称
+            $senderName = $storeName;
             $senderAvatar = '';
             if ($store && !empty($store['logo_id'])) {
                 $logoFile = UploadFileModel::detail($store['logo_id']);
@@ -247,6 +253,7 @@ class Chat extends Controller
             'sender_type' => 20,
             'sender_name' => $senderName,
             'sender_avatar' => $senderAvatar,
+            'is_anonymous' => $useStoreIdentity ? 1 : 0,
             'content' => $imageUrl,
             'type' => 20, // 图片消息
             'store_id' => $this->storeId,
