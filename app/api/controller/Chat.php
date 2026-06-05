@@ -387,6 +387,7 @@ class Chat extends Controller
             }
             $merchantInfo = [
                 'merchant_id' => (int)$merchantId,
+                'user_id' => $merchant ? (int)$merchant['user_id'] : 0,
                 'name' => $merchant['name'],
                 'logo' => [
                     'preview_url' => $merchantLogo
@@ -401,6 +402,7 @@ class Chat extends Controller
             }
             $merchantInfo = [
                 'merchant_id' => (int)$merchantId,
+                'user_id' => 0,
                 'name' => $store ? $store['store_name'] : ($merchant ? $merchant['name'] : '客服'),
                 'logo' => [
                     'preview_url' => $storeLogo
