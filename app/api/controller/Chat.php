@@ -103,11 +103,12 @@ class Chat extends Controller
                     $f = \app\common\model\UploadFile::detail($merchant['logo_id']);
                     $mLogo = $f ? $f['preview_url'] : '';
                 }
+                $name = $merchant['name'];
+                $logo = $mLogo;
             } else {
-                $mLogo = $storeLogo;
+                $name = $storeName;
+                $logo = $storeLogo;
             }
-            $name = $merchant['name'];
-            $logo = $mLogo;
             
             $list[] = [
                 'session_type' => 'user', // 用户维度的会话
