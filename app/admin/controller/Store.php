@@ -15,6 +15,7 @@ namespace app\admin\controller;
 use think\response\Json;
 use app\admin\model\Store as StoreModel;
 use app\admin\model\store\User as StoreUserModel;
+use app\common\model\Merchant as MerchantModel;
 use cores\exception\BaseException;
 
 /**
@@ -74,7 +75,7 @@ class Store extends Controller
             return $this->renderError('确认密码不正确');
         }
         
-        // 事务：创建商城和超级管理员
+        // 事务：创建商城、超级管理员和平台自营商户
         $model = new StoreModel;
         $storeUser = new StoreUserModel;
         $model->transaction(function () use ($model, $storeUser, $data) {
@@ -86,8 +87,24 @@ class Store extends Controller
                 'create_time' => time(),
                 'update_time' => time(),
             ]);
-            // 创建超级管理员
-            $storeUser->add((int)$model['store_id'], $data);
+            $storeId = (int)$model['store_id'];
+            // 创建平台自营商户
+            $merchant = new MerchantModel;
+            $merchant->save([
+                'user_id' => 0,
+                'store_id' => $storeId,
+                'name' => $data['store_name'],
+                'status' => 10,
+                'create_time' => time(),
+                'update_time' => time(),
+            ]);
+            // 创建超级管理员（关联商户）
+            $storeUser->add($storeId, $data);
+            // 更新管理员的 merchant_id
+            \think\facade\Db::table('yoshop_store_user')
+                ->where('store_id', $storeId)
+                ->where('is_super', 1)
+                ->update(['merchant_id' => $merchant['merchant_id']]);
         });
         
         return $this->renderSuccess('添加成功');
