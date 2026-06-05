@@ -472,6 +472,8 @@ function getStoreId(): int
     // 2. 请求头中获取
     $storeId = (int)request()->header('store-id');
     if ($storeId > 0) return $storeId;
+    $storeId = (int)request()->header('store_id');
+    if ($storeId > 0) return $storeId;
     
     // 3. 商家后台登录用户所属店铺
     if (\app_name() === 'store') {

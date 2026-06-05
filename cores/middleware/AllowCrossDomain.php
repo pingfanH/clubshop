@@ -46,6 +46,7 @@ class AllowCrossDomain
         return [
             'Access-Token',
             'storeId',
+            'store-id',
             'platform',
             'domain',
         ];
