@@ -62,8 +62,8 @@ class User extends UserModel
         }
         // 用户的ID
         $userId = (int)Cache::get($token)['user']['user_id'];
-        // 用户基本信息
-        $userInfo = self::detail($userId, ['merchant']);
+        // 用户基本信息（绕过store_id作用域，用户可能跨店铺访问）
+        $userInfo = self::withoutGlobalScope()->with(['merchant'])->find($userId);
         if (empty($userInfo) || $userInfo['is_delete']) {
             throwError('很抱歉，用户信息不存在或已删除', config('status.not_logged'));
         }
