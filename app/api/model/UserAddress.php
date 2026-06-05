@@ -145,7 +145,9 @@ class UserAddress extends UserAddressModel
         $user = UserService::getCurrentLoginUser(true);
         // 清空默认地址
         if ($user['address_id'] == $this['address_id']) {
-            UserModel::updateBase(['address_id' => 0], $this['user_id']);
+            \think\facade\Db::table('yoshop_user')
+                ->where('user_id', $this['user_id'])
+                ->update(['address_id' => 0]);
         }
         // 标记为已删除
         return $this->save(['is_delete' => 1]);
