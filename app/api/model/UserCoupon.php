@@ -30,7 +30,6 @@ class UserCoupon extends UserCouponModel
 {
     // 用户优惠券不随店铺切换
     protected bool $isGlobalScopeStoreId = false;
-    protected bool $isGlobalScopeStoreId = false;
 
     /**
      * 隐藏字段 UserCouponModel
