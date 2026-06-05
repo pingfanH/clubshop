@@ -1,0 +1,101 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: yoshop2-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    command: >
+      sh -c "
+      [ -f .env ] || cp .env.docker .env;
+      mkdir -p runtime public/uploads data;
+      chown -R www-data:www-data runtime public/uploads data;
+      php-fpm
+      "
+    depends_on:
+      - db
+      - redis
+    networks:
+      - yoshop
+
+  nginx:
+    image: docker.m.daocloud.io/library/nginx:1.24-alpine
+    container_name: yoshop2-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - yoshop
+
+  db:
+    image: docker.m.daocloud.io/library/mysql:8.0
+    container_name: yoshop2-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: yoshop2
+      MYSQL_USER: yoshop2
+      MYSQL_PASSWORD: yoshop2
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+      - --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init-update.sh:/docker-entrypoint-initdb.d/init-update.sh:ro
+      - ./update.sql:/update.sql:ro
+    networks:
+      - yoshop
+
+  redis:
+    image: docker.m.daocloud.io/library/redis:6-alpine
+    container_name: yoshop2-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - yoshop
+
+  init-db:
+    image: docker.m.daocloud.io/library/mysql:8.0
+    container_name: yoshop2-init-db
+    profiles:
+      - init
+    depends_on:
+      - db
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: yoshop2
+      MYSQL_USER: yoshop2
+      MYSQL_PASSWORD: yoshop2
+    volumes:
+      - ./docker/mysql/init-db.sh:/scripts/init-db.sh:ro
+      - ./update.sql:/sql/10-update.sql:ro
+      - ../:/sql-extra:ro
+    entrypoint:
+      - sh
+      - /scripts/init-db.sh
+    networks:
+      - yoshop
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  yoshop:
+    driver: bridge

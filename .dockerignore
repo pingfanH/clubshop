@@ -1,0 +1,9 @@
+.git
+.idea
+.vscode
+runtime
+vendor
+public/uploads
+data
+*.log
+.DS_Store
