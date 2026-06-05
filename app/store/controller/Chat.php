@@ -9,6 +9,8 @@ use app\common\model\User as UserModel;
 use app\common\model\Merchant as MerchantModel;
 use app\common\model\Store as StoreModel;
 use app\common\model\UploadFile as UploadFileModel;
+use app\common\model\store\UserRole;
+use app\common\service\store\User as StoreUserService;
 use cores\exception\BaseException;
 
 /**
@@ -25,9 +27,20 @@ class Chat extends Controller
      */
     public function sessions(): Json
     {
-        // 获取当前店铺下的所有商家
-        $merchantIds = MerchantModel::where('store_id', $this->storeId)
-            ->column('merchant_id');
+        // 判断当前登录用户是否为商家管理员(角色10004)
+        $storeUser = $this->store;
+        $storeUserId = $storeUser['user']['store_user_id'] ?? 0;
+        $roleIds = UserRole::getRoleIdsByUserId($storeUserId);
+        $isMerchant = in_array(10004, $roleIds);
+        
+        if ($isMerchant) {
+            // 商家角色：只看自己的会话
+            $merchantIds = [$storeUser['user']['merchant_id'] ?? 0];
+        } else {
+            // 管理员：看所有商家会话
+            $merchantIds = MerchantModel::where('store_id', $this->storeId)
+                ->column('merchant_id');
+        }
         
         if (empty($merchantIds)) {
             return $this->renderSuccess(['list' => []]);
