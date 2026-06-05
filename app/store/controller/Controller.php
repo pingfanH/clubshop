@@ -66,10 +66,10 @@ class Controller extends BaseController
      */
     public function initialize()
     {
+        // 设置管理员登录信息（先于getStoreId，因为需要从登录信息获取store_id）
+        $this->setStoreInfo();
         // 获取当前登录的商城ID
         $this->getStoreId();
-        // 设置管理员登录信息
-        $this->setStoreInfo();
         // 当前路由信息
         $this->getRouteinfo();
         // 验证登录状态
