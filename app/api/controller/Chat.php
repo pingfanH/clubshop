@@ -65,97 +65,59 @@ class Chat extends Controller
         // 获取当前店铺信息
         $store = \app\common\model\Store::detail((int)$this->storeId);
         $storeName = $store ? $store['store_name'] : '店铺';
-        
-        // 获取店铺logo
         $storeLogo = '';
         if ($store && !empty($store['logo_image_id'])) {
             $logoFile = \app\common\model\UploadFile::detail($store['logo_image_id']);
             $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
         }
         
-        // 获取当前用户参与的会话
-        $mySessionsList = ChatMessageModel::where('user_id', $userId)
+        $list = [];
+        $seenMerchantIds = [];
+        
+        // 1. 当前用户参与的会话（按商家分组，与不同商家的聊天）
+        $mySessions = ChatMessageModel::where('user_id', $userId)
             ->where('store_id', $this->storeId)
             ->field('merchant_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
             ->group('merchant_id')
             ->select();
-        $mySessions = [];
-        foreach ($mySessionsList as $s) {
-            $mySessions[(int)$s['merchant_id']] = $s;
-        }
-        
-        // 如果当前用户是商家，获取发给其商家的会话
-        $merchantSessions = [];
-        if ($userMerchantId > 0) {
-            $merchantSessionsList = ChatMessageModel::where('merchant_id', $userMerchantId)
-                ->where('store_id', $this->storeId)
-                ->where('user_id', '<>', $userId)
-                ->field('merchant_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
-                ->group('merchant_id')
-                ->select();
-            foreach ($merchantSessionsList as $s) {
-                $merchantSessions[(int)$s['merchant_id']] = $s;
-            }
-        }
-        
-        // 合并会话，以merchant_id为键去重
-        $allSessions = $merchantSessions;
-        foreach ($mySessions as $merchantId => $session) {
-            if (!isset($allSessions[$merchantId])) {
-                $allSessions[$merchantId] = $session;
-            } else {
-                $allSessions[$merchantId]['message_count'] += $session['message_count'];
-                if ($session['last_message_time'] > $allSessions[$merchantId]['last_message_time']) {
-                    $allSessions[$merchantId]['last_message_time'] = $session['last_message_time'];
-                }
-            }
-        }
-        
-        $list = [];
-        foreach ($allSessions as $session) {
-            $merchantId = (int)$session['merchant_id'];
-            // 获取商家信息
-            $merchant = MerchantModel::detail($merchantId);
+        foreach ($mySessions as $session) {
+            $mid = (int)$session['merchant_id'];
+            $merchant = MerchantModel::detail($mid);
             if (empty($merchant)) continue;
+            $seenMerchantIds[] = $mid;
             
-            // 获取最后一条消息（不限user_id）
-            $lastMessage = ChatMessageModel::where('merchant_id', $merchantId)
+            $lastMessage = ChatMessageModel::where('user_id', $userId)
+                ->where('merchant_id', $mid)
                 ->where('store_id', $this->storeId)
                 ->order('create_time', 'desc')
                 ->find();
             
-            // 计算未读消息数（用户发送给该商家的未读消息，排除商家自己的）
-            $unreadCount = ChatMessageModel::where('merchant_id', $merchantId)
+            $unreadCount = ChatMessageModel::where('user_id', $userId)
+                ->where('merchant_id', $mid)
                 ->where('store_id', $this->storeId)
-                ->where('sender_type', 10)
-                ->where('is_read', 0);
-            if ($userMerchantId === $merchantId) {
-                // 商家看自己的商家：不把商家自己发的算作未读
-                $unreadCount->where('user_id', '<>', $userId);
-            } else {
-                $unreadCount->where('user_id', '=', $userId);
-            }
-            $unreadCount = $unreadCount->count();
+                ->where('sender_type', 20)
+                ->where('is_read', 0)
+                ->count();
             
-            // 区分真实商家和平台自营
             $isRealMerchant = !empty($merchant['user_id']);
             if ($isRealMerchant) {
                 $mLogo = '';
                 if ($merchant && !empty($merchant['logo_id'])) {
-                    $logoFile = \app\common\model\UploadFile::detail($merchant['logo_id']);
-                    $mLogo = $logoFile ? $logoFile['preview_url'] : '';
+                    $f = \app\common\model\UploadFile::detail($merchant['logo_id']);
+                    $mLogo = $f ? $f['preview_url'] : '';
                 }
-                $merchantName = $merchant['name'];
-                $merchantLogo = $mLogo;
+                $name = $merchant['name'];
+                $logo = $mLogo;
             } else {
-                $merchantName = $storeName;
-                $merchantLogo = $storeLogo;
+                $name = $storeName;
+                $logo = $storeLogo;
             }
             
             $list[] = [
-                'merchant_id' => $merchantId,
-                'merchant_name' => $merchantName,
-                'merchant_logo' => $merchantLogo,
+                'session_type' => 'user', // 用户维度的会话
+                'merchant_id' => $mid,
+                'merchant_name' => $name,
+                'merchant_logo' => $logo,
                 'last_message' => $lastMessage ? $lastMessage['content'] : '',
                 'last_message_type' => $lastMessage ? (int)$lastMessage['type'] : 10,
                 'last_message_time' => (int)$session['last_message_time'],
@@ -164,8 +126,64 @@ class Chat extends Controller
             ];
         }
         
+        // 2. 如果当前用户是商家，获取发给其商家的会话（按用户分组）
+        if ($userMerchantId > 0) {
+            $customerSessions = ChatMessageModel::where('merchant_id', $userMerchantId)
+                ->where('store_id', $this->storeId)
+                ->where('user_id', '<>', $userId)
+                ->field('user_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
+                ->group('user_id')
+                ->order('last_message_time', 'desc')
+                ->select();
+            
+            foreach ($customerSessions as $session) {
+                $customerId = (int)$session['user_id'];
+                $customer = \app\common\model\User::detail($customerId);
+                if (empty($customer)) continue;
+                
+                $customerAvatar = '';
+                if (!empty($customer['avatar_id'])) {
+                    $f = \app\common\model\UploadFile::detail($customer['avatar_id']);
+                    $customerAvatar = $f ? $f['preview_url'] : '';
+                }
+                
+                $lastMessage = ChatMessageModel::where('merchant_id', $userMerchantId)
+                    ->where('user_id', $customerId)
+                    ->where('store_id', $this->storeId)
+                    ->order('create_time', 'desc')
+                    ->find();
+                
+                $unreadCount = ChatMessageModel::where('merchant_id', $userMerchantId)
+                    ->where('user_id', $customerId)
+                    ->where('store_id', $this->storeId)
+                    ->where('sender_type', 10)
+                    ->where('is_read', 0)
+                    ->count();
+                
+                $list[] = [
+                    'session_type' => 'customer', // 客户维度的会话
+                    'merchant_id' => $userMerchantId,
+                    'user_id' => $customerId,
+                    'customer_name' => $customer['nick_name'] ?: '用户' . $customerId,
+                    'customer_avatar' => $customerAvatar,
+                    'merchant_name' => '',
+                    'merchant_logo' => '',
+                    'last_message' => $lastMessage ? $lastMessage['content'] : '',
+                    'last_message_type' => $lastMessage ? (int)$lastMessage['type'] : 10,
+                    'last_message_time' => (int)$session['last_message_time'],
+                    'message_count' => (int)$session['message_count'],
+                    'unread_count' => (int)$unreadCount,
+                ];
+            }
+        }
+        
         // 按最后消息时间降序排序
         usort($list, function ($a, $b) {
+            return $b['last_message_time'] - $a['last_message_time'];
+        });
+        
+        return $this->renderSuccess(['list' => $list]);
+    }
             return $b['last_message_time'] - $a['last_message_time'];
         });
         
