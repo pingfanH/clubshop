@@ -127,9 +127,11 @@ class UserAddress extends UserAddressModel
      */
     public function setDefault(int $addressIid): bool
     {
-        // 设为默认地址
+        // 设为默认地址（绕过store_id作用域）
         $userId = UserService::getCurrentLoginUserId();
-        return UserModel::updateBase(['address_id' => $addressIid], $userId);
+        return \think\facade\Db::table('yoshop_user')
+            ->where('user_id', $userId)
+            ->update(['address_id' => $addressIid]) !== false;
     }
 
     /**
