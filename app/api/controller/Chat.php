@@ -100,10 +100,25 @@ class Chat extends Controller
                 ->where('is_read', 0)
                 ->count();
             
+            // 区分真实商家和平台自营
+            $isRealMerchant = !empty($merchant['user_id']);
+            if ($isRealMerchant) {
+                $merchantLogo = '';
+                if ($merchant && !empty($merchant['logo_id'])) {
+                    $logoFile = \app\common\model\UploadFile::detail($merchant['logo_id']);
+                    $merchantLogo = $logoFile ? $logoFile['preview_url'] : '';
+                }
+                $merchantName = $merchant['name'];
+                $merchantLogo = $merchantLogo;
+            } else {
+                $merchantName = $storeName;
+                $merchantLogo = $storeLogo;
+            }
+            
             $list[] = [
                 'merchant_id' => (int)$session['merchant_id'],
-                'merchant_name' => $storeName,
-                'merchant_logo' => $storeLogo,
+                'merchant_name' => $merchantName,
+                'merchant_logo' => $merchantLogo,
                 'last_message' => $lastMessage ? $lastMessage['content'] : '',
                 'last_message_type' => $lastMessage ? (int)$lastMessage['type'] : 10,
                 'last_message_time' => (int)$session['last_message_time'],
@@ -287,21 +302,37 @@ class Chat extends Controller
         // 获取店铺信息
         $store = \app\common\model\Store::detail((int)$this->storeId);
         
-        // 获取店铺logo
-        $storeLogo = '';
-        if ($store && !empty($store['logo_image_id'])) {
-            $logoFile = \app\common\model\UploadFile::detail($store['logo_image_id']);
-            $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
+        // 根据商家类型返回不同信息
+        $isRealMerchant = $merchant && !empty($merchant['user_id']);
+        if ($isRealMerchant) {
+            // 真实商家：显示商家名称和logo
+            $merchantLogo = '';
+            if ($merchant && !empty($merchant['logo_id'])) {
+                $logoFile = \app\common\model\UploadFile::detail($merchant['logo_id']);
+                $merchantLogo = $logoFile ? $logoFile['preview_url'] : '';
+            }
+            $merchantInfo = [
+                'merchant_id' => (int)$merchantId,
+                'name' => $merchant['name'],
+                'logo' => [
+                    'preview_url' => $merchantLogo
+                ],
+            ];
+        } else {
+            // 平台自营：显示店铺名称和logo
+            $storeLogo = '';
+            if ($store && !empty($store['logo_image_id'])) {
+                $logoFile = \app\common\model\UploadFile::detail($store['logo_image_id']);
+                $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
+            }
+            $merchantInfo = [
+                'merchant_id' => (int)$merchantId,
+                'name' => $store ? $store['store_name'] : ($merchant ? $merchant['name'] : '客服'),
+                'logo' => [
+                    'preview_url' => $storeLogo
+                ],
+            ];
         }
-        
-        // 构建返回的商家信息（使用店铺名称和logo）
-        $merchantInfo = [
-            'merchant_id' => (int)$merchantId,
-            'name' => $store ? $store['store_name'] : ($merchant ? $merchant['name'] : '客服'),
-            'logo' => [
-                'preview_url' => $storeLogo
-            ],
-        ];
             
         return $this->renderSuccess([
             'list' => $list,
