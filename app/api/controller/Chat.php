@@ -76,7 +76,6 @@ class Chat extends Controller
         
         // 1. 当前用户参与的会话（按商家分组，与不同商家的聊天）
         $mySessions = ChatMessageModel::where('user_id', $userId)
-            ->where('store_id', $this->storeId)
             ->field('merchant_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
             ->group('merchant_id')
             ->select();
@@ -88,13 +87,11 @@ class Chat extends Controller
             
             // 取该商家的最新一条消息（不限user_id）
             $lastMessage = ChatMessageModel::where('merchant_id', $mid)
-                ->where('store_id', $this->storeId)
                 ->order('create_time', 'desc')
                 ->find();
             
             // 未读消息数：商家/管理员发来的新消息
             $unreadCount = ChatMessageModel::where('merchant_id', $mid)
-                ->where('store_id', $this->storeId)
                 ->where('sender_type', 20)
                 ->where('is_read', 0)
                 ->count();
@@ -129,7 +126,6 @@ class Chat extends Controller
         // 2. 如果当前用户是商家，获取发给其商家的会话（按用户分组）
         if ($userMerchantId > 0) {
             $customerSessions = ChatMessageModel::where('merchant_id', $userMerchantId)
-                ->where('store_id', $this->storeId)
                 ->where('user_id', '<>', $userId)
                 ->field('user_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
                 ->group('user_id')
@@ -149,13 +145,11 @@ class Chat extends Controller
                 
                 $lastMessage = ChatMessageModel::where('merchant_id', $userMerchantId)
                     ->where('user_id', $customerId)
-                    ->where('store_id', $this->storeId)
                     ->order('create_time', 'desc')
                     ->find();
                 
                 $unreadCount = ChatMessageModel::where('merchant_id', $userMerchantId)
                     ->where('user_id', $customerId)
-                    ->where('store_id', $this->storeId)
                     ->where('sender_type', 10)
                     ->where('is_read', 0)
                     ->count();
