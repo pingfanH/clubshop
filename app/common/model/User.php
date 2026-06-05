@@ -25,6 +25,9 @@ use app\common\model\user\PointsLog as PointsLogModel;
  */
 class User extends BaseModel
 {
+    // 用户数据不随店铺切换
+    protected bool $isGlobalScopeStoreId = false;
+
     // 定义表名
     protected $name = 'user';
 
