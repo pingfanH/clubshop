@@ -465,6 +465,30 @@ function hide_mobile(string $mobile): string
  */
 function getStoreId(): int
 {
+    // 1. 请求参数中获取
+    $storeId = request()->param('store_id/d');
+    if ($storeId > 0) return $storeId;
+    
+    // 2. 请求头中获取
+    $storeId = (int)request()->header('store-id');
+    if ($storeId > 0) return $storeId;
+    
+    // 3. 商家后台登录用户所属店铺
+    if (\app_name() === 'store') {
+        $loginInfo = \app\store\service\store\User::getLoginInfo();
+        if (!empty($loginInfo['store_id'])) {
+            return (int)$loginInfo['store_id'];
+        }
+    }
+    
+    // 4. 超管后台登录用户所属店铺 (超管关联的 store_id 在 user 中)
+    if (\app_name() === 'admin') {
+        $loginInfo = \app\admin\service\admin\User::getLoginInfo();
+        if (!empty($loginInfo['user']['store_id'])) {
+            return (int)$loginInfo['user']['store_id'];
+        }
+    }
+    
     return 10001;
 }
 
