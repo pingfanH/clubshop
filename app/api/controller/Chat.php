@@ -34,7 +34,7 @@ class Chat extends Controller
             $merchant = new MerchantModel;
             $merchant->save([
                 'user_id' => 0,
-            'store_id' => $targetStoreId,
+                'store_id' => $this->storeId,
                 'name' => '平台自营',
                 'status' => 10,
                 'create_time' => time(),

@@ -14,6 +14,9 @@ use think\model\relation\BelongsTo;
  */
 class Merchant extends BaseModel
 {
+    // 商户按merchant_id关联，不按store_id过滤
+    protected bool $isGlobalScopeStoreId = false;
+
     // 定义表名
     protected $name = 'merchant';
 
