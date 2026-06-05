@@ -71,11 +71,21 @@ class Chat extends Controller
             $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
         }
         
-        // 获取用户的所有会话（按商家分组，获取最后一条消息）
-        $sessions = ChatMessageModel::where('user_id', $user['user_id'])
-            ->where('store_id', $this->storeId)
-            ->field('merchant_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
-            ->group('merchant_id')
+        // 查询条件：当前用户参与的会话 或 当前用户作为商家的会话
+        $merchantUserIds = [];
+        if (!empty($user['merchant_id'])) {
+            $merchantUserIds[] = $user['merchant_id'];
+        }
+        
+        $sessions = ChatMessageModel::where('store_id', $this->storeId)
+            ->where(function ($query) use ($user, $merchantUserIds) {
+                $query->where('user_id', '=', $user['user_id']);
+                if (!empty($merchantUserIds)) {
+                    $query->whereOr('merchant_id', 'in', $merchantUserIds);
+                }
+            })
+            ->field('user_id, merchant_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
+            ->group('user_id, merchant_id')
             ->order('last_message_time', 'desc')
             ->select();
         
@@ -86,30 +96,44 @@ class Chat extends Controller
             if (empty($merchant)) continue;
             
             // 获取最后一条消息
-            $lastMessage = ChatMessageModel::where('user_id', $user['user_id'])
-                ->where('merchant_id', $session['merchant_id'])
+            $lastMessage = ChatMessageModel::where(function ($query) use ($user, $session) {
+                    $query->where('user_id', '=', $user['user_id'])
+                        ->where('merchant_id', '=', $session['merchant_id']);
+                    // 如果当前用户是商家所有者，也查其他用户发给该商家的消息
+                    if (!empty($user['merchant_id']) && (int)$user['merchant_id'] === (int)$session['merchant_id']) {
+                        $query->whereOr(function ($q) use ($session) {
+                            $q->where('merchant_id', '=', $session['merchant_id'])
+                              ->where('user_id', '<>', $user['user_id']);
+                        });
+                    }
+                })
                 ->where('store_id', $this->storeId)
                 ->order('create_time', 'desc')
                 ->find();
             
             // 计算未读消息数
-            $unreadCount = ChatMessageModel::where('user_id', $user['user_id'])
-                ->where('merchant_id', $session['merchant_id'])
+            $unreadCount = ChatMessageModel::where('merchant_id', $session['merchant_id'])
                 ->where('store_id', $this->storeId)
-                ->where('sender_type', 20) // 商家/管理员发送的
-                ->where('is_read', 0)
-                ->count();
+                ->where('sender_type', 10) // 用户发送的
+                ->where('is_read', 0);
+            // 如果当前用户是商家所有者，排除自己的消息
+            if (!empty($user['merchant_id']) && (int)$user['merchant_id'] === (int)$session['merchant_id']) {
+                $unreadCount->where('user_id', '<>', $user['user_id']);
+            } else {
+                $unreadCount->where('user_id', '=', $user['user_id']);
+            }
+            $unreadCount = $unreadCount->count();
             
             // 区分真实商家和平台自营
             $isRealMerchant = !empty($merchant['user_id']);
             if ($isRealMerchant) {
-                $merchantLogo = '';
+                $mLogo = '';
                 if ($merchant && !empty($merchant['logo_id'])) {
                     $logoFile = \app\common\model\UploadFile::detail($merchant['logo_id']);
-                    $merchantLogo = $logoFile ? $logoFile['preview_url'] : '';
+                    $mLogo = $logoFile ? $logoFile['preview_url'] : '';
                 }
                 $merchantName = $merchant['name'];
-                $merchantLogo = $merchantLogo;
+                $merchantLogo = $mLogo;
             } else {
                 $merchantName = $storeName;
                 $merchantLogo = $storeLogo;
@@ -297,28 +321,48 @@ class Chat extends Controller
     public function list()
     {
         $user = $this->getLoginUser();
-        $merchantId = $this->request->get('merchant_id');
+        $merchantId = (int)$this->request->get('merchant_id');
         
         if (empty($merchantId)) {
             return $this->renderError('参数错误');
         }
         
         // 标记消息为已读
-        ChatMessageModel::where('user_id', $user['user_id'])
-            ->where('merchant_id', $merchantId)
-            ->where('store_id', $this->storeId)
-            ->where('sender_type', 20)
-            ->where('is_read', 0)
-            ->update(['is_read' => 1]);
+        // 如果是商家所有者查看自己商家的消息，标记所有用户消息为已读
+        $isMerchantOwner = !empty($user['merchant_id']) && (int)$user['merchant_id'] === $merchantId;
+        if ($isMerchantOwner) {
+            ChatMessageModel::where('merchant_id', $merchantId)
+                ->where('store_id', $this->storeId)
+                ->where('sender_type', 10)
+                ->where('is_read', 0)
+                ->update(['is_read' => 1]);
+        } else {
+            ChatMessageModel::where('user_id', $user['user_id'])
+                ->where('merchant_id', $merchantId)
+                ->where('store_id', $this->storeId)
+                ->where('sender_type', 20)
+                ->where('is_read', 0)
+                ->update(['is_read' => 1]);
+        }
         
-        $list = ChatMessageModel::where('user_id', $user['user_id'])
-            ->where('merchant_id', $merchantId)
-            ->where('store_id', $this->storeId)
-            ->order('create_time', 'asc')
-            ->select();
+        // 获取消息列表
+        if ($isMerchantOwner) {
+            // 商家所有者：看到该商家的所有消息
+            $list = ChatMessageModel::where('merchant_id', $merchantId)
+                ->where('store_id', $this->storeId)
+                ->order('create_time', 'asc')
+                ->select();
+        } else {
+            // 普通用户：只看到自己的消息
+            $list = ChatMessageModel::where('user_id', $user['user_id'])
+                ->where('merchant_id', $merchantId)
+                ->where('store_id', $this->storeId)
+                ->order('create_time', 'asc')
+                ->select();
+        }
             
         // 获取商户信息
-        $merchant = MerchantModel::detail((int)$merchantId);
+        $merchant = MerchantModel::detail($merchantId);
         // 获取店铺信息
         $store = \app\common\model\Store::detail((int)$this->storeId);
         
