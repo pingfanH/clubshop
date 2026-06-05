@@ -48,6 +48,13 @@ class Page extends PageModel
     {
         // 页面详情
         $detail = $pageId > 0 ? parent::detail($pageId) : parent::getHomePage();
+        // 如果当前店铺没有页面，尝试获取默认店铺的页面
+        if (empty($detail)) {
+            $detail = $pageId > 0 ? null : \app\common\model\Page::withoutGlobalScope()
+                ->where('store_id', 10001)
+                ->where('is_home', 1)
+                ->find();
+        }
         empty($detail) && throwError('很抱歉，未找到该页面');
         // 页面diy元素
         $pageData = $detail['page_data'];
