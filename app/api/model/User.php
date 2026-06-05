@@ -67,6 +67,14 @@ class User extends UserModel
         if (empty($userInfo) || $userInfo['is_delete']) {
             throwError('很抱歉，用户信息不存在或已删除', config('status.not_logged'));
         }
+        // 手动加载头像（绕过store_id作用域）
+        if (!empty($userInfo['avatar_id'])) {
+            $avatarFile = \app\common\model\UploadFile::withoutGlobalScope()
+                ->find($userInfo['avatar_id']);
+            $userInfo['avatar_url'] = $avatarFile ? $avatarFile['preview_url'] : '';
+        } else {
+            $userInfo['avatar_url'] = '';
+        }
         // 设置商家身份
         $userInfo['is_merchant'] = !empty($userInfo['merchant']);
         $userInfo['merchant_id'] = $userInfo['merchant'] ? $userInfo['merchant']['merchant_id'] : 0;
