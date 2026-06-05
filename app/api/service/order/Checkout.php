@@ -69,6 +69,7 @@ class Checkout extends BaseService
         'couponId' => 0,        // 用户的优惠券ID
         'isUsePoints' => 0,     // 是否使用积分抵扣
         'remark' => '',         // 买家留言
+        'pay_type' => 10,       // 支付方式 10全款 20定金
     ];
 
     /**
@@ -829,7 +830,6 @@ class Checkout extends BaseService
             'coupon_money' => $order['couponMoney'],
             'points_money' => $isExistPointsDeduction ? $order['pointsMoney'] : 0,
             'points_num' => $isExistPointsDeduction ? $order['pointsNum'] : 0,
-            'pay_price' => $order['orderPayPrice'],
             'delivery_type' => $order['delivery'],
             'buyer_remark' => trim($remark),
             'order_source' => $this->orderSource['source'],
@@ -840,6 +840,17 @@ class Checkout extends BaseService
             'platform' => \getPlatform(),
             'store_id' => $this->storeId,
         ];
+        // 定金购买
+        $isDeposit = isset($order['pay_type']) && $order['pay_type'] == 20;
+        if ($isDeposit) {
+            $data['pay_type'] = 20;
+            $data['deposit_price'] = $order['depositPrice'] ?? 0;
+            $data['final_price'] = $order['finalPrice'] ?? 0;
+            $data['pay_price'] = $order['depositPrice'] ?? 0;
+        } else {
+            $data['pay_type'] = 10;
+            $data['pay_price'] = $order['orderPayPrice'];
+        }
         if ($order['delivery'] == DeliveryTypeEnum::EXPRESS) {
             $data['express_price'] = $order['expressPrice'];
         }

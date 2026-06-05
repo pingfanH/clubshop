@@ -17,6 +17,7 @@ use app\api\model\Order as OrderModel;
 use app\api\model\Setting as SettingModel;
 use app\api\service\User as UserService;
 use app\api\service\Order as OrderService;
+use app\api\service\Cashier as CashierService;
 use cores\exception\BaseException;
 
 /**
@@ -121,5 +122,66 @@ class Order extends Controller
         $model = new OrderModel;
         $counts = $model->getTodoCounts();
         return $this->renderSuccess(compact('counts'));
+    }
+
+    /**
+     * 支付定金
+     * @param int $orderId
+     * @param string $method 支付方式
+     * @param string $client 客户端
+     * @param array $extra
+     * @return Json
+     * @throws BaseException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function payDeposit(int $orderId, string $method, string $client, array $extra = []): Json
+    {
+        $order = OrderModel::getDetail($orderId);
+        if (!$order || $order['pay_type'] != 20) {
+            return $this->renderError('订单不支持定金支付');
+        }
+        if ($order['deposit_pay_status'] == 20) {
+            return $this->renderError('定金已支付');
+        }
+        $CashierService = new CashierService;
+        $data = $CashierService->setOrderId($orderId)
+            ->setMethod($method)
+            ->setClient($client)
+            ->orderPay($extra);
+        return $this->renderSuccess($data, $CashierService->getMessage() ?: '支付请求已发起');
+    }
+
+    /**
+     * 支付尾款
+     * @param int $orderId
+     * @param string $method 支付方式
+     * @param string $client 客户端
+     * @param array $extra
+     * @return Json
+     * @throws BaseException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function payFinal(int $orderId, string $method, string $client, array $extra = []): Json
+    {
+        $order = OrderModel::getDetail($orderId);
+        if (!$order || $order['pay_type'] != 20) {
+            return $this->renderError('订单不支持尾款支付');
+        }
+        if ($order['deposit_pay_status'] != 20) {
+            return $this->renderError('请先支付定金');
+        }
+        if ($order['final_pay_status'] == 20) {
+            return $this->renderError('尾款已支付');
+        }
+        $CashierService = new CashierService;
+        $data = $CashierService->setOrderId($orderId)
+            ->setMethod($method)
+            ->setClient($client)
+            ->orderPay($extra);
+        return $this->renderSuccess($data, $CashierService->getMessage() ?: '支付请求已发起');
     }
 }
