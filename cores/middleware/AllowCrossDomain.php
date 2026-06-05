@@ -87,9 +87,9 @@ class AllowCrossDomain
     {
         $header = !empty($header) ? array_merge($this->getHeader(), $header) : $this->getHeader();
         $header['Access-Control-Allow-Origin'] = '*';
-        $header['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, X-CSRF-TOKEN, X-Requested-With, Access-Token, storeId, store-id, platform, domain';
+        // OPTIONS预检请求直接返回
         if ($request->method(true) === 'OPTIONS') {
-            return response('', 204)->header($header);
+            return \think\Response::create('', 'html', 204)->header($header);
         }
         return $next($request)->header($header);
     }
