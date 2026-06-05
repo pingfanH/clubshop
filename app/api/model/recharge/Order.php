@@ -30,6 +30,9 @@ use app\common\library\helper;
  */
 class Order extends OrderModel
 {
+    // 充值订单不随店铺切换
+    protected bool $isGlobalScopeStoreId = false;
+
     /**
      * 隐藏字段
      * @var array
