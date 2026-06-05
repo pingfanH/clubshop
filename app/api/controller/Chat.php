@@ -67,7 +67,7 @@ class Chat extends Controller
         $storeName = $store ? $store['store_name'] : '店铺';
         $storeLogo = '';
         if ($store && !empty($store['logo_image_id'])) {
-            $logoFile = \app\common\model\UploadFile::detail($store['logo_image_id']);
+            $logoFile = \app\common\model\UploadFile::withoutGlobalScope()->find($store['logo_image_id']);
             $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
         }
         
@@ -100,7 +100,7 @@ class Chat extends Controller
             if ($isRealMerchant) {
                 $mLogo = '';
                 if ($merchant && !empty($merchant['logo_id'])) {
-                    $f = \app\common\model\UploadFile::detail($merchant['logo_id']);
+                    $f = \app\common\model\UploadFile::withoutGlobalScope()->find($merchant['logo_id']);
                     $mLogo = $f ? $f['preview_url'] : '';
                 }
                 $name = $merchant['name'];
@@ -139,7 +139,7 @@ class Chat extends Controller
                 
                 $customerAvatar = '';
                 if (!empty($customer['avatar_id'])) {
-                    $f = \app\common\model\UploadFile::detail($customer['avatar_id']);
+                    $f = \app\common\model\UploadFile::withoutGlobalScope()->find($customer['avatar_id']);
                     $customerAvatar = $f ? $f['preview_url'] : '';
                 }
                 
@@ -213,7 +213,7 @@ class Chat extends Controller
             $senderName = $merchant['name'];
             $senderAvatar = '';
             if (!empty($merchant['logo_id'])) {
-                $uploadFile = \app\common\model\UploadFile::detail($merchant['logo_id']);
+                $uploadFile = \app\common\model\UploadFile::withoutGlobalScope()->find($merchant['logo_id']);
                 $senderAvatar = $uploadFile ? $uploadFile['preview_url'] : '';
             }
         } else {
@@ -221,7 +221,7 @@ class Chat extends Controller
             $senderName = $user['nick_name'] ?: '用户' . $user['user_id'];
             $senderAvatar = '';
             if (!empty($user['avatar_id'])) {
-                $uploadFile = \app\common\model\UploadFile::detail($user['avatar_id']);
+                $uploadFile = \app\common\model\UploadFile::withoutGlobalScope()->find($user['avatar_id']);
                 $senderAvatar = $uploadFile ? $uploadFile['preview_url'] : '';
             }
         }
@@ -269,7 +269,7 @@ class Chat extends Controller
         // 获取用户头像
         $userAvatar = '';
         if (!empty($user['avatar_id'])) {
-            $uploadFile = \app\common\model\UploadFile::detail($user['avatar_id']);
+            $uploadFile = \app\common\model\UploadFile::withoutGlobalScope()->find($user['avatar_id']);
             $userAvatar = $uploadFile ? $uploadFile['preview_url'] : '';
         }
 
@@ -327,7 +327,7 @@ class Chat extends Controller
         // 获取用户头像
         $userAvatar = '';
         if (!empty($user['avatar_id'])) {
-            $uploadFile = \app\common\model\UploadFile::detail($user['avatar_id']);
+            $uploadFile = \app\common\model\UploadFile::withoutGlobalScope()->find($user['avatar_id']);
             $userAvatar = $uploadFile ? $uploadFile['preview_url'] : '';
         }
 
@@ -386,7 +386,7 @@ class Chat extends Controller
             // 真实商家：显示商家名称和logo
             $merchantLogo = '';
             if ($merchant && !empty($merchant['logo_id'])) {
-                $logoFile = \app\common\model\UploadFile::detail($merchant['logo_id']);
+                $logoFile = \app\common\model\UploadFile::withoutGlobalScope()->find($merchant['logo_id']);
                 $merchantLogo = $logoFile ? $logoFile['preview_url'] : '';
             }
             $merchantInfo = [
@@ -401,7 +401,7 @@ class Chat extends Controller
             // 平台自营：显示店铺名称和logo
             $storeLogo = '';
             if ($store && !empty($store['logo_image_id'])) {
-                $logoFile = \app\common\model\UploadFile::detail($store['logo_image_id']);
+                $logoFile = \app\common\model\UploadFile::withoutGlobalScope()->find($store['logo_image_id']);
                 $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
             }
             $merchantInfo = [
