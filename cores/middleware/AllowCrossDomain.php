@@ -86,7 +86,14 @@ class AllowCrossDomain
     public function handle(Request $request, Closure $next, ?array $header = []): Response
     {
         $header = !empty($header) ? array_merge($this->getHeader(), $header) : $this->getHeader();
-        $header['Access-Control-Allow-Origin'] = '*';
+        // 动态设置 Origin（带认证信息时不能用 *）
+        $origin = $request->header('origin');
+        if ($origin) {
+            $header['Access-Control-Allow-Origin'] = $origin;
+            $header['Vary'] = 'Origin';
+        } else {
+            $header['Access-Control-Allow-Origin'] = '*';
+        }
         // OPTIONS预检请求直接返回
         if ($request->method(true) === 'OPTIONS') {
             return \think\Response::create('', 'html', 204)->header($header);
