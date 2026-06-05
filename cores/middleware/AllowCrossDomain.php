@@ -66,8 +66,8 @@ class AllowCrossDomain
         return [
             // 允许cookie跨域访问
             'Access-Control-Allow-Credentials' => 'true',
-            // 预检请求的有效期
-            'Access-Control-Max-Age' => 1800,
+            // 预检请求的有效期（设为0禁止缓存，避免CORS策略更新不及时）
+            'Access-Control-Max-Age' => 0,
             // 允许跨域的方法
             'Access-Control-Allow-Methods' => 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
             // 跨域请求header头
