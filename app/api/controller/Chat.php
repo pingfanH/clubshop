@@ -184,11 +184,6 @@ class Chat extends Controller
         
         return $this->renderSuccess(['list' => $list]);
     }
-            return $b['last_message_time'] - $a['last_message_time'];
-        });
-        
-        return $this->renderSuccess(['list' => $list]);
-    }
 
     /**
      * 发送消息
