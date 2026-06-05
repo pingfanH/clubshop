@@ -13,6 +13,9 @@ use think\model\relation\BelongsTo;
  */
 class ChatMessage extends BaseModel
 {
+    // 聊天消息不按店铺过滤（按merchant_id关联）
+    protected bool $isGlobalScopeStoreId = false;
+
     // 定义表名
     protected $name = 'chat_message';
 
