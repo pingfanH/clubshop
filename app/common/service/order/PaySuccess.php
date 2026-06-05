@@ -305,7 +305,7 @@ class PaySuccess extends BaseService
     private function getUserInfo()
     {
         if (empty($this->userInfo)) {
-            $this->userInfo = UserModel::detail($this->getOrderInfo()['user_id']);
+            $this->userInfo = UserModel::withoutGlobalScope()->find($this->getOrderInfo()['user_id']);
         }
         if (empty($this->userInfo)) {
             throwError('未找到买家用户信息');
