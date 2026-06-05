@@ -34,7 +34,7 @@ class Chat extends Controller
             $merchant = new MerchantModel;
             $merchant->save([
                 'user_id' => 0,
-                'store_id' => $this->storeId,
+            'store_id' => $targetStoreId,
                 'name' => '平台自营',
                 'status' => 10,
                 'create_time' => time(),
@@ -204,6 +204,10 @@ class Chat extends Controller
         $merchantId = (int)$param['merchant_id'];
         $senderType = (int)($param['sender_type'] ?? 10);
         
+        // 获取商家信息（用于确定store_id）
+        $merchantInfo = MerchantModel::detail($merchantId);
+        $targetStoreId = $merchantInfo ? (int)$merchantInfo['store_id'] : $this->storeId;
+        
         // 如果以商家身份发送，验证当前用户是否为该商家所有者
         if ($senderType === 20) {
             $merchant = MerchantModel::where('merchant_id', $merchantId)
@@ -264,6 +268,10 @@ class Chat extends Controller
             return $this->renderError('参数错误');
         }
 
+        // 获取商家信息（用于确定store_id）
+        $merchantInfo = MerchantModel::detail((int)$param['merchant_id']);
+        $targetStoreId = $merchantInfo ? (int)$merchantInfo['store_id'] : $this->storeId;
+
         // 获取用户头像
         $userAvatar = '';
         if (!empty($user['avatar_id'])) {
@@ -281,7 +289,7 @@ class Chat extends Controller
             'sender_avatar' => $userAvatar,
             'content' => $param['image_url'],
             'type' => 20, // 图片消息
-            'store_id' => $this->storeId,
+            'store_id' => $targetStoreId,
             'is_read' => 0,
             'create_time' => time(),
         ])) {
@@ -303,6 +311,10 @@ class Chat extends Controller
         if (empty($param['merchant_id']) || empty($param['goods_id'])) {
             return $this->renderError('参数错误');
         }
+
+        // 获取商家信息（用于确定store_id）
+        $merchantInfo = MerchantModel::detail((int)$param['merchant_id']);
+        $targetStoreId = $merchantInfo ? (int)$merchantInfo['store_id'] : $this->storeId;
 
         // 获取商品信息
         $goods = \app\api\model\Goods::detail((int)$param['goods_id']);
@@ -335,7 +347,7 @@ class Chat extends Controller
             'sender_avatar' => $userAvatar,
             'content' => json_encode($goodsData),
             'type' => 30, // 商品卡片
-            'store_id' => $this->storeId,
+            'store_id' => $targetStoreId,
             'is_read' => 0,
             'create_time' => time(),
         ])) {
@@ -358,16 +370,14 @@ class Chat extends Controller
             return $this->renderError('参数错误');
         }
         
-        // 标记该商家发来的未读消息为已读
+        // 标记该商家发来的未读消息为已读（不限制store_id，因为消息按merchant_id存储）
         ChatMessageModel::where('merchant_id', $merchantId)
-            ->where('store_id', $this->storeId)
             ->where('sender_type', 20)
             ->where('is_read', 0)
             ->update(['is_read' => 1]);
         
-        // 获取该商家的所有消息（不限user_id，双方都能看到全部）
+        // 获取该商家的所有消息（不限user_id和store_id，双方都能看到全部）
         $list = ChatMessageModel::where('merchant_id', $merchantId)
-            ->where('store_id', $this->storeId)
             ->order('create_time', 'asc')
             ->select();
             
