@@ -86,14 +86,14 @@ class Chat extends Controller
             if (empty($merchant)) continue;
             $seenMerchantIds[] = $mid;
             
-            $lastMessage = ChatMessageModel::where('user_id', $userId)
-                ->where('merchant_id', $mid)
+            // 取该商家的最新一条消息（不限user_id）
+            $lastMessage = ChatMessageModel::where('merchant_id', $mid)
                 ->where('store_id', $this->storeId)
                 ->order('create_time', 'desc')
                 ->find();
             
-            $unreadCount = ChatMessageModel::where('user_id', $userId)
-                ->where('merchant_id', $mid)
+            // 未读消息数：商家/管理员发来的新消息
+            $unreadCount = ChatMessageModel::where('merchant_id', $mid)
                 ->where('store_id', $this->storeId)
                 ->where('sender_type', 20)
                 ->where('is_read', 0)
