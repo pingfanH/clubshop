@@ -70,6 +70,23 @@ class MerchantGoods extends Controller
     }
     
     /**
+     * 商品详情（编辑回显用）
+     */
+    public function detail($goodsId)
+    {
+        $user = $this->getLoginUser();
+        if (!$user['is_merchant']) return $this->renderError('无权访问');
+        
+        $model = GoodsModel::detail($goodsId);
+        if (!$model || $model['merchant_id'] != $user['merchant_id']) {
+            return $this->renderError('商品不存在或无权编辑');
+        }
+        
+        $detail = $model->getDetail((int)$goodsId);
+        return $this->renderSuccess(compact('detail'));
+    }
+    
+    /**
      * 编辑商品
      */
     public function edit($goodsId)
