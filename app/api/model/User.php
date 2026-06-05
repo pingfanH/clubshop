@@ -26,6 +26,9 @@ use yiovo\captcha\facade\CaptchaApi;
  */
 class User extends UserModel
 {
+    // 用户数据不随店铺切换
+    protected bool $isGlobalScopeStoreId = false;
+
     /**
      * 隐藏字段
      * @var array
@@ -62,8 +65,8 @@ class User extends UserModel
         }
         // 用户的ID
         $userId = (int)Cache::get($token)['user']['user_id'];
-        // 用户基本信息（绕过store_id作用域，用户可能跨店铺访问）
-        $userInfo = self::withoutGlobalScope()->with(['merchant'])->find($userId);
+        // 用户基本信息
+        $userInfo = self::detail($userId, ['merchant']);
         if (empty($userInfo) || $userInfo['is_delete']) {
             throwError('很抱歉，用户信息不存在或已删除', config('status.not_logged'));
         }
