@@ -59,6 +59,8 @@ class Chat extends Controller
     public function sessions()
     {
         $user = $this->getLoginUser();
+        $userId = (int)$user['user_id'];
+        $userMerchantId = !empty($user['merchant_id']) ? (int)$user['merchant_id'] : 0;
         
         // 获取当前店铺信息
         $store = \app\common\model\Store::detail((int)$this->storeId);
@@ -71,56 +73,67 @@ class Chat extends Controller
             $storeLogo = $logoFile ? $logoFile['preview_url'] : '';
         }
         
-        // 查询条件：当前用户参与的会话 或 当前用户作为商家的会话
-        $merchantUserIds = [];
-        if (!empty($user['merchant_id'])) {
-            $merchantUserIds[] = $user['merchant_id'];
+        // 获取当前用户参与的会话
+        $mySessionsList = ChatMessageModel::where('user_id', $userId)
+            ->where('store_id', $this->storeId)
+            ->field('merchant_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
+            ->group('merchant_id')
+            ->select();
+        $mySessions = [];
+        foreach ($mySessionsList as $s) {
+            $mySessions[(int)$s['merchant_id']] = $s;
         }
         
-        $sessions = ChatMessageModel::where('store_id', $this->storeId)
-            ->where(function ($query) use ($user, $merchantUserIds) {
-                $query->where('user_id', '=', $user['user_id']);
-                if (!empty($merchantUserIds)) {
-                    $query->whereOr('merchant_id', 'in', $merchantUserIds);
+        // 如果当前用户是商家，获取发给其商家的会话
+        $merchantSessions = [];
+        if ($userMerchantId > 0) {
+            $merchantSessionsList = ChatMessageModel::where('merchant_id', $userMerchantId)
+                ->where('store_id', $this->storeId)
+                ->where('user_id', '<>', $userId)
+                ->field('merchant_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
+                ->group('merchant_id')
+                ->select();
+            foreach ($merchantSessionsList as $s) {
+                $merchantSessions[(int)$s['merchant_id']] = $s;
+            }
+        }
+        
+        // 合并会话，以merchant_id为键去重
+        $allSessions = $merchantSessions;
+        foreach ($mySessions as $merchantId => $session) {
+            if (!isset($allSessions[$merchantId])) {
+                $allSessions[$merchantId] = $session;
+            } else {
+                $allSessions[$merchantId]['message_count'] += $session['message_count'];
+                if ($session['last_message_time'] > $allSessions[$merchantId]['last_message_time']) {
+                    $allSessions[$merchantId]['last_message_time'] = $session['last_message_time'];
                 }
-            })
-            ->field('user_id, merchant_id, MAX(create_time) as last_message_time, COUNT(*) as message_count')
-            ->group('user_id, merchant_id')
-            ->order('last_message_time', 'desc')
-            ->select();
+            }
+        }
         
         $list = [];
-        foreach ($sessions as $session) {
+        foreach ($allSessions as $session) {
+            $merchantId = (int)$session['merchant_id'];
             // 获取商家信息
-            $merchant = MerchantModel::detail((int)$session['merchant_id']);
+            $merchant = MerchantModel::detail($merchantId);
             if (empty($merchant)) continue;
             
-            // 获取最后一条消息
-            $lastMessage = ChatMessageModel::where(function ($query) use ($user, $session) {
-                    $query->where('user_id', '=', $user['user_id'])
-                        ->where('merchant_id', '=', $session['merchant_id']);
-                    // 如果当前用户是商家所有者，也查其他用户发给该商家的消息
-                    if (!empty($user['merchant_id']) && (int)$user['merchant_id'] === (int)$session['merchant_id']) {
-                        $query->whereOr(function ($q) use ($session) {
-                            $q->where('merchant_id', '=', $session['merchant_id'])
-                              ->where('user_id', '<>', $user['user_id']);
-                        });
-                    }
-                })
+            // 获取最后一条消息（不限user_id）
+            $lastMessage = ChatMessageModel::where('merchant_id', $merchantId)
                 ->where('store_id', $this->storeId)
                 ->order('create_time', 'desc')
                 ->find();
             
-            // 计算未读消息数
-            $unreadCount = ChatMessageModel::where('merchant_id', $session['merchant_id'])
+            // 计算未读消息数（用户发送给该商家的未读消息，排除商家自己的）
+            $unreadCount = ChatMessageModel::where('merchant_id', $merchantId)
                 ->where('store_id', $this->storeId)
-                ->where('sender_type', 10) // 用户发送的
+                ->where('sender_type', 10)
                 ->where('is_read', 0);
-            // 如果当前用户是商家所有者，排除自己的消息
-            if (!empty($user['merchant_id']) && (int)$user['merchant_id'] === (int)$session['merchant_id']) {
-                $unreadCount->where('user_id', '<>', $user['user_id']);
+            if ($userMerchantId === $merchantId) {
+                // 商家看自己的商家：不把商家自己发的算作未读
+                $unreadCount->where('user_id', '<>', $userId);
             } else {
-                $unreadCount->where('user_id', '=', $user['user_id']);
+                $unreadCount->where('user_id', '=', $userId);
             }
             $unreadCount = $unreadCount->count();
             
@@ -140,7 +153,7 @@ class Chat extends Controller
             }
             
             $list[] = [
-                'merchant_id' => (int)$session['merchant_id'],
+                'merchant_id' => $merchantId,
                 'merchant_name' => $merchantName,
                 'merchant_logo' => $merchantLogo,
                 'last_message' => $lastMessage ? $lastMessage['content'] : '',
@@ -150,6 +163,11 @@ class Chat extends Controller
                 'unread_count' => (int)$unreadCount,
             ];
         }
+        
+        // 按最后消息时间降序排序
+        usort($list, function ($a, $b) {
+            return $b['last_message_time'] - $a['last_message_time'];
+        });
         
         return $this->renderSuccess(['list' => $list]);
     }
