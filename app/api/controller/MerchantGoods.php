@@ -77,6 +77,7 @@ class MerchantGoods extends Controller
         $user = $this->getLoginUser();
         if (!$user['is_merchant']) return $this->renderError('无权访问');
         
+        $goodsId = (int)$goodsId;
         $model = GoodsModel::detail($goodsId);
         if (!$model || $model['merchant_id'] != $user['merchant_id']) {
             return $this->renderError('商品不存在或无权编辑');
@@ -94,6 +95,7 @@ class MerchantGoods extends Controller
         $user = $this->getLoginUser();
         if (!$user['is_merchant']) return $this->renderError('无权访问');
         
+        $goodsId = (int)$goodsId;
         // 获取详情
         $model = GoodsModel::detail($goodsId);
         if (!$model || $model['merchant_id'] != $user['merchant_id']) {
@@ -128,6 +130,7 @@ class MerchantGoods extends Controller
         $user = $this->getLoginUser();
         if (!$user['is_merchant']) return $this->renderError('无权访问');
         
+        $goodsId = (int)$goodsId;
         $model = GoodsModel::detail($goodsId);
         if (!$model || $model['merchant_id'] != $user['merchant_id']) {
              return $this->renderError('商品不存在或无权删除');
