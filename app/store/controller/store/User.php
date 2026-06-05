@@ -57,9 +57,10 @@ class User extends Controller
      */
     public function getAllMerchants(): Json
     {
-        // 从merchant表获取所有审核通过的商家
+        // 从merchant表获取所有审核通过的商家（排除平台自营）
         $list = MerchantModel::where('store_id', $this->storeId)
             ->where('status', 10)
+            ->where('merchant_id', '>', 1)
             ->field(['merchant_id', 'user_id', 'name'])
             ->select()
             ->toArray();
