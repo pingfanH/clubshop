@@ -324,12 +324,21 @@ class PaySuccess extends BaseService
         // 更新商品库存、销量
         StockFactory::getFactory($orderInfo['order_source'])->updateStockSales($orderInfo['goods']);
         // 更新订单状态
-        $this->orderModel()->save([
+        $saveData = [
             'pay_method' => $this->method,
-            'pay_status' => PayStatusEnum::SUCCESS,
-            'pay_time' => time(),
             'trade_id' => $this->tradeId ?: 0,
-        ]);
+        ];
+        // 定金订单：只标记定金已付，pay_status保持未付（尾款未付）
+        if (isset($orderInfo['pay_type']) && $orderInfo['pay_type'] == 20) {
+            $saveData['deposit_pay_status'] = 20;
+            $saveData['deposit_pay_time'] = time();
+            $saveData['pay_status'] = 20;
+            $saveData['pay_time'] = time();
+        } else {
+            $saveData['pay_status'] = PayStatusEnum::SUCCESS;
+            $saveData['pay_time'] = time();
+        }
+        $this->orderModel()->save($saveData);
     }
 
     /**

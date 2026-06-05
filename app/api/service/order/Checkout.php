@@ -841,12 +841,18 @@ class Checkout extends BaseService
             'store_id' => $this->storeId,
         ];
         // 定金购买
-        $isDeposit = isset($order['pay_type']) && $order['pay_type'] == 20;
+        $isDeposit = isset($this->param['pay_type']) && $this->param['pay_type'] == 20;
         if ($isDeposit) {
+            // 从商品数据获取定金金额
+            $depositPrice = 0;
+            if (!empty($this->goodsList)) {
+                $goodsItem = $this->goodsList[0] ?? null;
+                $depositPrice = $goodsItem ? ($goodsItem['deposit_price'] ?? 0) : 0;
+            }
             $data['pay_type'] = 20;
-            $data['deposit_price'] = $order['depositPrice'] ?? 0;
-            $data['final_price'] = $order['finalPrice'] ?? 0;
-            $data['pay_price'] = $order['depositPrice'] ?? 0;
+            $data['deposit_price'] = max(0, (float)$depositPrice);
+            $data['final_price'] = max(0, $data['total_price'] - $data['deposit_price']);
+            $data['pay_price'] = $data['deposit_price'];
         } else {
             $data['pay_type'] = 10;
             $data['pay_price'] = $order['orderPayPrice'];
