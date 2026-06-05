@@ -86,14 +86,10 @@ class AllowCrossDomain
     public function handle(Request $request, Closure $next, ?array $header = []): Response
     {
         $header = !empty($header) ? array_merge($this->getHeader(), $header) : $this->getHeader();
-        if (!isset($header['Access-Control-Allow-Origin'])) {
-            $origin = $request->header('origin');
-
-            if ($origin && ('' == $this->cookieDomain || strpos($origin, $this->cookieDomain))) {
-                $header['Access-Control-Allow-Origin'] = $origin;
-                // 缓存按 Origin 区分，避免跨域缓存污染
-                $header['Vary'] = 'Origin';
-            }
+        $header['Access-Control-Allow-Origin'] = '*';
+        $header['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, X-CSRF-TOKEN, X-Requested-With, Access-Token, storeId, store-id, platform, domain';
+        if ($request->method(true) === 'OPTIONS') {
+            return response('', 204)->header($header);
         }
         return $next($request)->header($header);
     }
