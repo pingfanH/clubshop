@@ -18,6 +18,7 @@ use app\store\model\store\User as StoreUserModel;
 use app\store\service\store\User as StoreUserService;
 use app\store\service\store\Role as StoreRoleService;
 use app\common\model\store\UserRole;
+use app\common\model\Merchant as MerchantModel;
 
 /**
  * 商家用户控制器
@@ -56,8 +57,12 @@ class User extends Controller
      */
     public function getAllMerchants(): Json
     {
-        $model = new StoreUserModel;
-        $list = $model->getAllMerchants();
+        // 从merchant表获取所有审核通过的商家
+        $list = MerchantModel::where('store_id', $this->storeId)
+            ->where('status', 10)
+            ->field(['merchant_id', 'user_id', 'name'])
+            ->select()
+            ->toArray();
         return $this->renderSuccess(compact('list'));
     }
 
