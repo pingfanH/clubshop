@@ -14,6 +14,8 @@ namespace app\admin\controller;
 
 use think\response\Json;
 use app\admin\model\Store as StoreModel;
+use app\admin\model\store\User as StoreUserModel;
+use cores\exception\BaseException;
 
 /**
  * 商城管理
@@ -50,10 +52,45 @@ class Store extends Controller
     /**
      * 新增商城
      * @return Json
+     * @throws BaseException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function add(): Json
     {
-        return $this->renderError('很抱歉，免费版暂不支持多开商城');
+        $data = $this->postForm();
+        
+        if (empty($data['store_name'])) {
+            return $this->renderError('请输入商城名称');
+        }
+        if (empty($data['user_name'])) {
+            return $this->renderError('请输入商家用户名');
+        }
+        if (empty($data['password'])) {
+            return $this->renderError('请输入密码');
+        }
+        if ($data['password'] !== $data['password_confirm']) {
+            return $this->renderError('确认密码不正确');
+        }
+        
+        // 事务：创建商城和超级管理员
+        $model = new StoreModel;
+        $storeUser = new StoreUserModel;
+        $model->transaction(function () use ($model, $storeUser, $data) {
+            // 创建商城
+            $model->save([
+                'store_name' => $data['store_name'],
+                'remark' => $data['remark'] ?? '',
+                'sort' => $data['sort'] ?? 100,
+                'create_time' => time(),
+                'update_time' => time(),
+            ]);
+            // 创建超级管理员
+            $storeUser->add((int)$model['store_id'], $data);
+        });
+        
+        return $this->renderSuccess('添加成功');
     }
 
     /**
