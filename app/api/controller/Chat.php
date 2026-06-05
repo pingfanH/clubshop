@@ -358,39 +358,18 @@ class Chat extends Controller
             return $this->renderError('参数错误');
         }
         
-        // 标记消息为已读
-        // 如果是商家所有者查看自己商家的消息，标记所有用户消息为已读
-        $isMerchantOwner = !empty($user['merchant_id']) && (int)$user['merchant_id'] === $merchantId;
-        if ($isMerchantOwner) {
-            ChatMessageModel::where('merchant_id', $merchantId)
-                ->where('store_id', $this->storeId)
-                ->where('sender_type', 10)
-                ->where('is_read', 0)
-                ->update(['is_read' => 1]);
-        } else {
-            ChatMessageModel::where('user_id', $user['user_id'])
-                ->where('merchant_id', $merchantId)
-                ->where('store_id', $this->storeId)
-                ->where('sender_type', 20)
-                ->where('is_read', 0)
-                ->update(['is_read' => 1]);
-        }
+        // 标记该商家发来的未读消息为已读
+        ChatMessageModel::where('merchant_id', $merchantId)
+            ->where('store_id', $this->storeId)
+            ->where('sender_type', 20)
+            ->where('is_read', 0)
+            ->update(['is_read' => 1]);
         
-        // 获取消息列表
-        if ($isMerchantOwner) {
-            // 商家所有者：看到该商家的所有消息
-            $list = ChatMessageModel::where('merchant_id', $merchantId)
-                ->where('store_id', $this->storeId)
-                ->order('create_time', 'asc')
-                ->select();
-        } else {
-            // 普通用户：只看到自己的消息
-            $list = ChatMessageModel::where('user_id', $user['user_id'])
-                ->where('merchant_id', $merchantId)
-                ->where('store_id', $this->storeId)
-                ->order('create_time', 'asc')
-                ->select();
-        }
+        // 获取该商家的所有消息（不限user_id，双方都能看到全部）
+        $list = ChatMessageModel::where('merchant_id', $merchantId)
+            ->where('store_id', $this->storeId)
+            ->order('create_time', 'asc')
+            ->select();
             
         // 获取商户信息
         $merchant = MerchantModel::detail($merchantId);
