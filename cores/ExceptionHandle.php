@@ -90,7 +90,19 @@ class ExceptionHandle extends Handle
     {
         $this->data = \array_merge(['isPrompt' => true], $this->data);
         $jsonData = ['message' => $this->message, 'status' => $this->status, 'data' => $this->data];
-        return json(array_merge($jsonData, $extend));
+        $response = json(array_merge($jsonData, $extend));
+        // 添加CORS头（异常响应不经过CORS中间件）
+        $origin = Request::header('origin');
+        if ($origin) {
+            $response->header([
+                'Access-Control-Allow-Origin' => $origin,
+                'Access-Control-Allow-Credentials' => 'true',
+                'Access-Control-Allow-Methods' => 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers' => 'Authorization, Content-Type, X-CSRF-TOKEN, X-Requested-With, Access-Token, storeId, store-id, platform, domain',
+                'Vary' => 'Origin',
+            ]);
+        }
+        return $response;
     }
 
     /**
