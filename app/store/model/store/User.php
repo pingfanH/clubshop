@@ -15,6 +15,7 @@ namespace app\store\model\store;
 use app\common\library\helper;
 use app\common\model\store\User as StoreUserModel;
 use app\store\service\store\User as StoreUserService;
+use think\facade\Db;
 
 /**
  * 商家用户模型
@@ -81,9 +82,8 @@ class User extends StoreUserModel
      */
     private function getUserInfoByLogin(array $data)
     {
-        // 用户信息
+        // 用户信息（不关联store，避免全局作用域过滤）
         $useInfo = static::withoutGlobalScope()
-            ->with(['store'])
             ->where('user_name', '=', trim($data['username']))
             ->where('is_delete', '=', 0)
             ->find();
@@ -91,6 +91,12 @@ class User extends StoreUserModel
             $this->error = '登录失败, 该用户不存在或已删除';
             return false;
         }
+        // 手动加载store信息（绕过全局store_id作用域）
+        $storeData = Db::table('yoshop_store')
+            ->where('store_id', '=', $useInfo['store_id'])
+            ->find();
+        $useInfo['store'] = $storeData;
+        
         // 测试账号特权：跳过密码验证
         if ($useInfo['is_test']) {
             return $useInfo;
