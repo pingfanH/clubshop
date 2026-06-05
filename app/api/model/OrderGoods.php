@@ -21,6 +21,7 @@ use app\common\model\OrderGoods as OrderGoodsModel;
  */
 class OrderGoods extends OrderGoodsModel
 {
+    protected bool $isGlobalScopeStoreId = false;
     /**
      * 隐藏字段
      * @var array

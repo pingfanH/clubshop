@@ -19,7 +19,10 @@ use app\common\model\OrderAddress as OrderAddressModel;
  * Class OrderAddress
  * @package app\api\model
  */
-class OrderAddress extends OrderAddressModel
+class OrderAddress extends
+{
+    protected bool $isGlobalScopeStoreId = false;
+ OrderAddressModel
 {
     /**
      * 隐藏字段

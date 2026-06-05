@@ -25,7 +25,10 @@ use cores\exception\BaseException;
  * Class OrderRefund
  * @package app\api\model
  */
-class OrderRefund extends OrderRefundModel
+class OrderRefund extends
+{
+    protected bool $isGlobalScopeStoreId = false;
+ OrderRefundModel
 {
     /**
      * 隐藏字段
