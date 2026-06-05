@@ -4,7 +4,8 @@ declare (strict_types=1);
 namespace app\api\controller;
 
 use app\store\model\Goods as GoodsModel; // 使用 store 模块的模型以复用 add/edit 逻辑
-use app\api\model\Goods as ApiGoodsModel; // 用于 list
+use app\common\model\Goods as CommonGoodsModel; // 用于列表查询
+use app\api\model\Goods as ApiGoodsModel; // 用于 detail
 use app\common\enum\goods\Status as GoodsStatusEnum;
 
 /**
@@ -20,21 +21,12 @@ class MerchantGoods extends Controller
         $user = $this->getLoginUser();
         if (!$user['is_merchant']) return $this->renderError('无权访问');
         
-        $model = new ApiGoodsModel;
         $params = $this->request->param();
+        $params['merchant_id'] = $user['merchant_id'];
+        $params['listType'] = 'all';
         
-        // 自定义查询逻辑
-        $query = $model->where('merchant_id', $user['merchant_id'])
-                      ->where('store_id', $this->storeId)
-                      ->where('is_delete', 0)
-                      ->order(['create_time' => 'desc']);
-                      
-        // 状态过滤
-        if (isset($params['status']) && $params['status'] > 0) {
-             $query->where('status', $params['status']);
-        }
-        
-        $list = $query->paginate($params['listRows'] ?? 15);
+        $model = new CommonGoodsModel;
+        $list = $model->getList($params, $params['listRows'] ?? 15);
         return $this->renderSuccess(compact('list'));
     }
     
