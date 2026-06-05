@@ -24,6 +24,9 @@ use cores\exception\BaseException;
  */
 class UserAddress extends UserAddressModel
 {
+    // 用户收货地址不随店铺切换
+    protected bool $isGlobalScopeStoreId = false;
+
     /**
      * 隐藏字段
      * @var array

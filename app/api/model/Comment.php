@@ -25,6 +25,7 @@ use cores\exception\BaseException;
  */
 class Comment extends CommentModel
 {
+    protected bool $isGlobalScopeStoreId = false;
     /**
      * 隐藏字段
      * @var array

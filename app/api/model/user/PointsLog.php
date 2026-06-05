@@ -23,6 +23,7 @@ use cores\exception\BaseException;
  */
 class PointsLog extends PointsLogModel
 {
+    protected bool $isGlobalScopeStoreId = false;
     /**
      * 隐藏字段
      * @var array

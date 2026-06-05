@@ -22,6 +22,7 @@ use app\common\model\user\BalanceLog as BalanceLogModel;
  */
 class BalanceLog extends BalanceLogModel
 {
+    protected bool $isGlobalScopeStoreId = false;
     /**
      * 隐藏字段
      * @var array

@@ -24,6 +24,12 @@ use cores\exception\BaseException;
  */
 class UserBrowseLog extends UserBrowseLogModel
 {
+    // 浏览历史不随店铺切换
+    protected bool $isGlobalScopeStoreId = false;
+
+    /**
+     * 隐藏字段 UserBrowseLogModel
+{
     /**
      * 隐藏字段
      * @var array

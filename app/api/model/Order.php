@@ -35,6 +35,9 @@ use cores\exception\BaseException;
  */
 class Order extends OrderModel
 {
+    // 订单不随店铺切换
+    protected bool $isGlobalScopeStoreId = false;
+
     /**
      * 隐藏字段
      * @var array

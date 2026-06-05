@@ -25,6 +25,12 @@ use cores\exception\BaseException;
  */
 class UserFavorite extends UserFavoriteModel
 {
+    // 商品收藏不随店铺切换
+    protected bool $isGlobalScopeStoreId = false;
+
+    /**
+     * 隐藏字段 UserFavoriteModel
+{
     /**
      * 隐藏字段
      * @var array
