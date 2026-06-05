@@ -52,7 +52,7 @@ class Page extends PageModel
         if (empty($detail)) {
             $detail = $pageId > 0 ? null : \app\common\model\Page::withoutGlobalScope()
                 ->where('store_id', 10001)
-                ->where('is_home', 1)
+                ->where('page_type', 10) // 10=首页
                 ->find();
         }
         empty($detail) && throwError('很抱歉，未找到该页面');
