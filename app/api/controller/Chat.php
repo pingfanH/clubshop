@@ -146,21 +146,41 @@ class Chat extends Controller
             return $this->renderError('参数错误');
         }
 
-        // 获取用户头像
-        $userAvatar = '';
-        if (!empty($user['avatar_id'])) {
-            $uploadFile = \app\common\model\UploadFile::detail($user['avatar_id']);
-            $userAvatar = $uploadFile ? $uploadFile['preview_url'] : '';
+        $merchantId = (int)$param['merchant_id'];
+        $senderType = (int)($param['sender_type'] ?? 10);
+        
+        // 如果以商家身份发送，验证当前用户是否为该商家所有者
+        if ($senderType === 20) {
+            $merchant = MerchantModel::where('merchant_id', $merchantId)
+                ->where('user_id', $user['user_id'])
+                ->find();
+            if (empty($merchant)) {
+                return $this->renderError('您不是该商家的所有者');
+            }
+            $senderName = $merchant['name'];
+            $senderAvatar = '';
+            if (!empty($merchant['logo_id'])) {
+                $uploadFile = \app\common\model\UploadFile::detail($merchant['logo_id']);
+                $senderAvatar = $uploadFile ? $uploadFile['preview_url'] : '';
+            }
+        } else {
+            // 用户身份发送
+            $senderName = $user['nick_name'] ?: '用户' . $user['user_id'];
+            $senderAvatar = '';
+            if (!empty($user['avatar_id'])) {
+                $uploadFile = \app\common\model\UploadFile::detail($user['avatar_id']);
+                $senderAvatar = $uploadFile ? $uploadFile['preview_url'] : '';
+            }
         }
 
         $model = new ChatMessageModel;
         if ($model->save([
             'user_id' => $user['user_id'],
-            'merchant_id' => $param['merchant_id'],
+            'merchant_id' => $merchantId,
             'store_user_id' => 0,
-            'sender_type' => 10, // User
-            'sender_name' => $user['nick_name'] ?: '用户' . $user['user_id'],
-            'sender_avatar' => $userAvatar,
+            'sender_type' => $senderType,
+            'sender_name' => $senderName,
+            'sender_avatar' => $senderAvatar,
             'content' => $param['content'],
             'type' => $param['type'] ?? 10,
             'store_id' => $this->storeId,
