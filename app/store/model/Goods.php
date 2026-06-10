@@ -293,6 +293,16 @@ class Goods extends GoodsModel
             $data['line_price_min'] = $data['line_price_max'] = $data['line_price'];
             $data['stock_total'] = $data['stock_num'];
         }
+        // 验证定金金额不超过商品总价
+        if (isset($data['pay_type']) && $data['pay_type'] == 20 && $data['deposit_price'] > 0) {
+            $goodsPrice = $data['goods_price_min'] ?? 0;
+            if ($data['deposit_price'] > $goodsPrice) {
+                throwError('定金金额不能高于商品价格 ' . $goodsPrice);
+            }
+            if ($data['deposit_price'] >= $goodsPrice) {
+                throwError('定金金额必须低于商品价格');
+            }
+        }
         // 规格和sku数据处理
         if ($data['spec_type'] == GoodsSpecTypeEnum::MULTI) {
             // 验证规格值是否合法

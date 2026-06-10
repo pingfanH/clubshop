@@ -488,6 +488,13 @@ class Checkout extends BaseService
         $this->orderData['orderPrice'] = helper::number2(helper::getArrayColumnSum($this->goodsList, 'total_pay_price'));
         // 订单实付款金额(订单金额 + 运费)
         $this->orderData['orderPayPrice'] = helper::number2(helper::bcadd($this->orderData['orderPrice'], $this->orderData['expressPrice']));
+        // 定金信息：从商品列表中获取
+        $firstGoods = $this->goodsList[0] ?? null;
+        $this->orderData['pay_type'] = $firstGoods ? ($firstGoods['pay_type'] ?? 10) : 10;
+        $this->orderData['deposit_price'] = $firstGoods ? (float)($firstGoods['deposit_price'] ?? 0) : 0;
+        $this->orderData['final_price'] = $this->orderData['pay_type'] == 20
+            ? max(0, $this->orderData['orderPayPrice'] - $this->orderData['deposit_price'])
+            : 0;
     }
 
     /**
